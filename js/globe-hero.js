@@ -89,32 +89,24 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
   var camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
   camera.position.set(0, 0, 4.6);
-  scene.add(camera); // required for a light parented to the camera (below) to light the scene
 
-  var ambient = new THREE.AmbientLight(0x5a6a85, 0.6);
-  scene.add(ambient);
-
-  // Parented to the camera rather than fixed in world space, so the lit/
-  // dark split always sits at the same angle relative to what's being
-  // looked at. With a world-fixed light, the globe's continuous idle spin
-  // would eventually rotate its lit face away from the camera, making the
-  // hero look dim and washed-out at essentially random moments depending
-  // on how long the page had been open.
-  var sun = new THREE.DirectionalLight(0xfff2df, 2.15);
-  sun.position.set(3.2, 1.6, 2.4);
-  camera.add(sun);
+  // Brighter, warmer-neutral fill so shadowed ocean reads as deep blue
+  // rather than near-black, without flattening the day/night contrast.
+  var ambient = new THREE.AmbientLight(0x8a94aa, 0.85);
+  var sun = new THREE.DirectionalLight(0xfff2df, 2.3);
+  scene.add(ambient, sun);
 
   var globeGroup = new THREE.Group();
   scene.add(globeGroup);
 
   var globeGeo = new THREE.SphereGeometry(GLOBE_R, 96, 96);
-  var globeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0.05 });
+  var globeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0 });
   var globeMesh = new THREE.Mesh(globeGeo, globeMat);
   globeGroup.add(globeMesh);
 
   var cloudGeo = new THREE.SphereGeometry(CLOUD_R, 48, 48);
   var cloudMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false, roughness: 1, metalness: 0
+    color: 0xffffff, transparent: true, opacity: 0.68, depthWrite: false, roughness: 1, metalness: 0
   });
   var cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
   globeGroup.add(cloudMesh);
@@ -171,18 +163,41 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     camera.updateProjectionMatrix();
   }
 
+  // The sun tracks this same direction (see updateSunDirection) rather than
+  // sitting fixed in world space or parented to the camera at a fixed
+  // offset. At progress 0, `dir` is always exactly `startDir` regardless of
+  // how much the globe has idly spun (slerpDir(a, b, 0) === a), so the
+  // at-rest lighting stays consistent; at progress 1, `dir` is exactly
+  // `japanWorld`, so Japan is guaranteed to be the best-lit point on the
+  // globe right as the camera arrives — without lighting the whole sphere
+  // uniformly, since points away from `dir` still fall into shadow.
+  var sunDir = new THREE.Vector3();
+
   function updateCamera() {
     var japanWorld = japanLocal.clone().applyQuaternion(globeGroup.quaternion).normalize();
     var eased = easeInOutCubic(progress);
     var dir = slerpDir(startDir, japanWorld, eased);
+    updateSunDirection(dir);
     var dist = THREE.MathUtils.lerp(framing.distStart, framing.distEnd, eased);
     var target = new THREE.Vector3().lerpVectors(
       new THREE.Vector3(0, 0, 0),
       japanWorld.clone().multiplyScalar(GLOBE_R),
       eased
     );
-    camera.position.copy(dir.multiplyScalar(dist)).add(parallaxOffset);
+    camera.position.copy(dir.clone().multiplyScalar(dist)).add(parallaxOffset);
     camera.lookAt(target);
+  }
+
+  var sunUpRef = new THREE.Vector3(0, 1, 0);
+  function updateSunDirection(dir) {
+    // A modest fixed tilt off `dir` keeps natural-looking shading/terminator
+    // variation elsewhere on the globe instead of a flat, uniformly-lit
+    // look — small enough that the point `dir` itself stays comfortably lit.
+    var right = new THREE.Vector3().crossVectors(sunUpRef, dir);
+    if (right.lengthSq() < 1e-6) right.set(1, 0, 0); else right.normalize();
+    var up = new THREE.Vector3().crossVectors(dir, right).normalize();
+    sunDir.copy(dir).addScaledVector(right, 0.34).addScaledVector(up, 0.22).normalize();
+    sun.position.copy(sunDir).multiplyScalar(6);
   }
 
   function updateOverlay() {
