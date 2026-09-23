@@ -25,6 +25,7 @@
 
   --navy: #0A1524;
   --navy-soft: #14243D;
+  --header-h: 81px; /* .site-header's actual rendered height — kept in sync manually */
 }
 
 * { box-sizing: border-box; }
@@ -248,9 +249,15 @@ hr.rule {
 .hero-3d-wrap { position: relative; height: 240vh; }
 
 .hero-3d-sticky {
+  /* top/height account for the sticky header: at scroll 0, this element
+     hasn't engaged its "stuck" state yet and sits at its normal-flow
+     position — right after the header, not at the viewport top — so a
+     plain "top:0; height:100vh" here would make its own box (and anything
+     positioned against its bottom edge, like the scroll cue) extend past
+     the actual viewport by the header's height on first paint. */
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
   min-height: 560px;
   overflow: hidden;
   display: flex;
