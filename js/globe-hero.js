@@ -27,6 +27,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
   var fallbackActivated = false;
   var fallbackTimer = null;
+  var ready = false;
   var started = false;
   var paused = false;
   var rafId = null;
@@ -235,6 +236,25 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     requestAnimationFrame(function () { resize(); computeProgress(); resizeTicking = false; });
   }
 
+  // Self-healing sizing: fires once as soon as the sticky container has a
+  // settled layout (independent of when textures finish loading), and again
+  // on any later box-size change — a font swap shifting layout, or a mobile
+  // browser's address bar collapsing on first scroll (which changes 100vh
+  // without necessarily firing a plain window "resize"). Without this, the
+  // camera framing computed too early can silently go stale until something
+  // else happens to trigger a resize.
+  if ("ResizeObserver" in window) {
+    var sizeObserver = new ResizeObserver(function () {
+      resize();
+      if (ready) {
+        if (!reducedMotion) computeProgress();
+        updateCamera();
+        renderer.render(scene, camera);
+      }
+    });
+    sizeObserver.observe(stickyEl);
+  }
+
   function onMouseMove(e) {
     mouseTarget.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouseTarget.y = (e.clientY / window.innerHeight) * 2 - 1;
@@ -262,10 +282,10 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     if (!paused) rafId = requestAnimationFrame(animate);
   }
 
-  function onReady() {
+  function finalizeReady() {
     if (fallbackActivated) return;
-    if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
     resize();
+    ready = true;
 
     if (reducedMotion) {
       wrapEl.classList.add("hero3d-static");
@@ -293,6 +313,20 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     if (loadingEl) loadingEl.classList.add("is-hidden");
     lastT = performance.now();
     rafId = requestAnimationFrame(animate);
+  }
+
+  function onReady() {
+    if (fallbackActivated) return;
+    if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+    // Defer past the current layout/paint pass before taking the first
+    // authoritative size measurement and render. Textures can finish
+    // decoding before the browser has settled the page's first layout on a
+    // hard refresh, which previously left the camera framed for a stale
+    // size (globe off-center, scroll cue not yet reflecting progress) until
+    // an unrelated resize happened to fix it.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(finalizeReady);
+    });
   }
 
   var manager = new THREE.LoadingManager();
