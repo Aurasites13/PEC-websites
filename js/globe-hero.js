@@ -89,11 +89,20 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
   var camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
   camera.position.set(0, 0, 4.6);
+  scene.add(camera); // required for a light parented to the camera (below) to light the scene
 
   var ambient = new THREE.AmbientLight(0x5a6a85, 0.6);
+  scene.add(ambient);
+
+  // Parented to the camera rather than fixed in world space, so the lit/
+  // dark split always sits at the same angle relative to what's being
+  // looked at. With a world-fixed light, the globe's continuous idle spin
+  // would eventually rotate its lit face away from the camera, making the
+  // hero look dim and washed-out at essentially random moments depending
+  // on how long the page had been open.
   var sun = new THREE.DirectionalLight(0xfff2df, 2.15);
-  sun.position.set(5, 2.2, 4);
-  scene.add(ambient, sun);
+  sun.position.set(3.2, 1.6, 2.4);
+  camera.add(sun);
 
   var globeGroup = new THREE.Group();
   scene.add(globeGroup);
