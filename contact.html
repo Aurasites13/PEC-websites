@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-en="Contact | PEC — Private Education Concierge" data-ja="お問い合わせ | PEC プライベート・エデュケーション・コンシェルジュ">Contact | PEC — Private Education Concierge</title>
+<meta name="description" content="Book a private consultation with PEC via our contact form, LINE, or WhatsApp.">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="assets/favicon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&family=Noto+Serif+JP:wght@500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand" aria-label="PEC — Private Education Concierge">
+      <img src="assets/logo-monogram-crop.png" alt="PEC — Private Education Concierge" class="brand-monogram">
+    </a>
+    <nav>
+      <ul class="nav-links">
+      <li><a href="index.html"><span data-lang-inline="en">Home</span><span data-lang-inline="ja">ホーム</span></a></li>
+      <li><a href="about.html"><span data-lang-inline="en">About</span><span data-lang-inline="ja">私たちについて</span></a></li>
+      <li><a href="services.html"><span data-lang-inline="en">Services</span><span data-lang-inline="ja">サービス</span></a></li>
+      <li><a href="pricing.html"><span data-lang-inline="en">Pricing</span><span data-lang-inline="ja">料金</span></a></li>
+      <li><a href="testimonials.html"><span data-lang-inline="en">Testimonials</span><span data-lang-inline="ja">お客様の声</span></a></li>
+      <li><a href="faq.html"><span data-lang-inline="en">FAQ</span><span data-lang-inline="ja">よくある質問</span></a></li>
+      <li><a href="contact.html" class="active"><span data-lang-inline="en">Contact</span><span data-lang-inline="ja">お問い合わせ</span></a></li>
+      </ul>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="ja">JP</button>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <span class="eyebrow"><span data-lang-inline="en">Contact</span><span data-lang-inline="ja">お問い合わせ</span></span>
+      <h1><span data-lang-inline="en">Let&rsquo;s begin with a conversation.</span><span data-lang-inline="ja">まずは、お話をお聞かせください。</span></h1>
+      <p class="lead center"><span data-lang-inline="en">Tell us a little about your family and your goals. We reply within two business days, in English or Japanese.</span><span data-lang-inline="ja">ご家庭の状況や目標について、簡単にお聞かせください。2営業日以内に、英語または日本語でご返信いたします。</span></p>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="container">
+      <div class="grid-2">
+
+        <div class="reveal">
+          <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="company">
+            <input type="hidden" name="form-name" value="contact">
+            <p style="display:none;">
+              <label><span data-lang-inline="en">Don&rsquo;t fill this out if you&rsquo;re human:</span><span data-lang-inline="ja"></span> <input name="company"></label>
+            </p>
+
+            <div class="form-field">
+              <label for="name"><span data-lang-inline="en">Full Name</span><span data-lang-inline="ja">お名前</span></label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-field">
+              <label for="email"><span data-lang-inline="en">Email</span><span data-lang-inline="ja">メールアドレス</span></label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-field">
+              <label for="phone"><span data-lang-inline="en">Phone (optional)</span><span data-lang-inline="ja">電話番号（任意）</span></label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-field">
+              <label for="interest"><span data-lang-inline="en">Service of Interest</span><span data-lang-inline="ja">ご興味のあるサービス</span></label>
+              <!-- Native <option> elements ignore CSS display, so language
+                   spans can't be used here; options carry a fixed bilingual
+                   label instead. -->
+              <select id="interest" name="interest">
+                <option value="tutoring">One-to-One Tutoring / 個別指導</option>
+                <option value="exams">Exam Preparation (IELTS/EIKEN/TOEFL/TOEIC) / 試験対策</option>
+                <option value="school-support">School Support / 学校サポート</option>
+                <option value="study-abroad">Study Abroad &amp; Swiss Boarding Schools / 海外留学・スイス寄宿学校</option>
+                <option value="concierge">Concierge Retainer / コンシェルジュ・リテイナー</option>
+                <option value="other">Other / その他</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="message"><span data-lang-inline="en">Message</span><span data-lang-inline="ja">メッセージ</span></label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block"><span data-lang-inline="en">Send Message</span><span data-lang-inline="ja">送信する</span></button>
+            <p class="form-status" style="display:none;color:var(--accent);margin-top:16px;"></p>
+          </form>
+        </div>
+
+        <div class="reveal">
+          <div class="card" style="margin-bottom:24px;">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16v11H10l-4 3.5v-3.5H4v-11Z"/><path d="M8 10h8M8 13h5"/></svg>
+            <h3><span data-lang-inline="en">Prefer to message us directly?</span><span data-lang-inline="ja">直接メッセージでのご連絡もお気軽に</span></h3>
+            <p><span data-lang-inline="en">Reach us on LINE or WhatsApp for a faster, informal first contact.</span><span data-lang-inline="ja">より気軽な初回のご連絡には、LINEまたはWhatsAppもご利用いただけます。</span></p>
+            <div class="contact-methods">
+              <a href="https://line.me/ti/p/~pecjapan" target="_blank" rel="noopener" class="btn btn-line"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="14" rx="4"/><path d="M7 9.5v5M10 9.5v5l3-5v5M16.5 9.5H14v5h2.5M14 12h2"/></svg> LINE</a>
+              <a href="https://wa.me/819000000000" target="_blank" rel="noopener" class="btn btn-whatsapp"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18.5 4.6 21l2.6-1.3A8.5 8.5 0 1 0 3.7 12a8.4 8.4 0 0 0 1.1 4.2L6 18.5Z"/><path d="M9 9.3c0-.5.4-1 .9-1h.4c.3 0 .5.2.6.4l.6 1.4c.1.3 0 .6-.2.8l-.5.5c.4 1 1.2 1.8 2.2 2.2l.5-.5c.2-.2.5-.3.8-.2l1.4.6c.3.1.4.4.4.7v.4c0 .5-.4.9-1 .9-3 0-6-2.5-6.1-6Z"/></svg> WhatsApp</a>
+            </div>
+          </div>
+          <div class="card">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8 13.2h2M11.5 13.2h2M15 13.2h2M8 16.6h2M11.5 16.6h2"/></svg>
+            <h3><span data-lang-inline="en">Details</span><span data-lang-inline="ja">詳細</span></h3>
+            <p style="margin-bottom:6px;">
+              <strong><span data-lang-inline="en">Email</span><span data-lang-inline="ja">メール</span>:</strong> <a href="mailto:hello@pecjapan.com">hello@pecjapan.com</a>
+            </p>
+            <p style="margin-bottom:6px;"><span data-lang-inline="en">Tokyo, Japan &mdash; consultations by appointment, in person or online.</span><span data-lang-inline="ja">東京 &mdash; ご相談は完全予約制。対面・オンラインいずれも対応可能です。</span></p>
+            <p style="margin-bottom:0;"><span data-lang-inline="en">Response time: within 2 business days.</span><span data-lang-inline="ja">ご返信目安：2営業日以内。</span></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <img src="assets/logo-wordmark-crop.png" alt="PEC — Private Education Concierge">
+        <p><span data-lang-inline="en">Boutique academic concierge for Tokyo's most discerning families.</span><span data-lang-inline="ja">東京の上質なご家庭のための、ブティック型教育コンシェルジュ。</span></p>
+      </div>
+      <div>
+        <h4><span data-lang-inline="en">Explore</span><span data-lang-inline="ja">サイトマップ</span></h4>
+        <ul>
+          <li><a href="index.html"><span data-lang-inline="en">Home</span><span data-lang-inline="ja">ホーム</span></a></li>
+          <li><a href="about.html"><span data-lang-inline="en">About</span><span data-lang-inline="ja">私たちについて</span></a></li>
+          <li><a href="services.html"><span data-lang-inline="en">Services</span><span data-lang-inline="ja">サービス</span></a></li>
+          <li><a href="pricing.html"><span data-lang-inline="en">Pricing</span><span data-lang-inline="ja">料金</span></a></li>
+          <li><a href="testimonials.html"><span data-lang-inline="en">Testimonials</span><span data-lang-inline="ja">お客様の声</span></a></li>
+          <li><a href="faq.html"><span data-lang-inline="en">FAQ</span><span data-lang-inline="ja">よくある質問</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span data-lang-inline="en">Contact</span><span data-lang-inline="ja">お問い合わせ</span></h4>
+        <ul>
+          <li><a href="mailto:hello@pecjapan.com">hello@pecjapan.com</a></li>
+          <li><a href="contact.html"><span data-lang-inline="en">Book a Consultation</span><span data-lang-inline="ja">ご相談のご予約</span></a></li>
+          <li><a href="https://line.me/ti/p/~pecjapan" target="_blank" rel="noopener">LINE</a></li>
+          <li><a href="https://wa.me/819000000000" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><span data-lang-inline="en">Tokyo, Japan &middot; by appointment</span><span data-lang-inline="ja">東京 &middot; 完全予約制</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span data-lang-inline="en">Legal</span><span data-lang-inline="ja">法的情報</span></h4>
+        <ul>
+          <li><a href="privacy.html"><span data-lang-inline="en">Privacy Policy</span><span data-lang-inline="ja">プライバシーポリシー</span></a></li>
+          <li><a href="terms.html"><span data-lang-inline="en">Terms of Service</span><span data-lang-inline="ja">利用規約</span></a></li>
+          <li><a href="sct.html"><span data-lang-inline="en">Specified Commercial Transactions Act</span><span data-lang-inline="ja">特定商取引法に基づく表記</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year>2026</span> <span data-lang-inline="en">Private Education Concierge (PEC). All rights reserved.</span><span data-lang-inline="ja">Private Education Concierge (PEC). 無断複写・転載を禁じます。</span></span>
+      <span><span data-lang-inline="en">Designed with discretion in Tokyo.</span><span data-lang-inline="ja">東京にて、細やかな配慮とともに。</span></span>
+    </div>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

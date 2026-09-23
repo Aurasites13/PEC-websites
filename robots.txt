@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pecjapan.com/sitemap.xml
