@@ -33,6 +33,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var rafId = null;
   var lastT = 0;
   var progress = 0;
+  var targetProgress = 0;
+  var PROGRESS_DAMPING = 6;
   var mouseTarget = { x: 0, y: 0 };
   var mouseEased = { x: 0, y: 0 };
   var parallaxOffset = new THREE.Vector3();
@@ -80,6 +82,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   if (!renderer) { activateFallback(); return; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  var maxAnisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
 
   var scene = new THREE.Scene();
   scene.background = new THREE.Color(NAVY);
@@ -96,7 +99,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var globeGroup = new THREE.Group();
   scene.add(globeGroup);
 
-  var globeGeo = new THREE.SphereGeometry(GLOBE_R, 64, 64);
+  var globeGeo = new THREE.SphereGeometry(GLOBE_R, 96, 96);
   var globeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0.05 });
   var globeMesh = new THREE.Mesh(globeGeo, globeMat);
   globeGroup.add(globeMesh);
@@ -215,11 +218,14 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     if (cueEl) cueEl.style.opacity = String(1 - smoothstep(0, 0.06, progress));
   }
 
+  // Only updates the raw scroll-derived target — the visible `progress` is
+  // eased toward it once per animation frame (see animate()) so camera
+  // motion stays smooth regardless of how choppy the underlying scroll
+  // events are (mouse-wheel steps vs. trackpad deltas).
   function computeProgress() {
     var rect = wrapEl.getBoundingClientRect();
     var total = rect.height - window.innerHeight;
-    progress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
-    updateOverlay();
+    targetProgress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
   }
 
   var scrollTicking = false;
@@ -246,10 +252,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   if ("ResizeObserver" in window) {
     var sizeObserver = new ResizeObserver(function () {
       resize();
-      if (ready) {
-        if (!reducedMotion) computeProgress();
+      if (!ready) return;
+      if (reducedMotion) {
+        // No render loop in this path — reframe immediately.
         updateCamera();
         renderer.render(scene, camera);
+      } else {
+        computeProgress();
       }
     });
     sizeObserver.observe(stickyEl);
@@ -267,6 +276,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     var dt = clamp((t - lastT) / 1000, 0, 0.05);
     lastT = t;
 
+    // Ease the visible scroll progress toward the raw target every frame
+    // (framerate-independent damping) instead of snapping straight to
+    // whatever the last scroll event reported — this is what keeps the
+    // camera fly-through fluid on both bursty wheel ticks and continuous
+    // trackpad deltas.
+    progress = THREE.MathUtils.damp(progress, targetProgress, PROGRESS_DAMPING, dt);
+
     var slow = 1 - Math.min(progress, 1) * 0.85;
     globeGroup.rotation.y += IDLE_SPEED * slow * dt;
     cloudMesh.rotation.y += IDLE_CLOUD_EXTRA * dt;
@@ -277,6 +293,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     parallaxOffset.set(mouseEased.x * parallaxStrength, -mouseEased.y * parallaxStrength * 0.6, 0);
 
     updateCamera();
+    updateOverlay();
     renderer.render(scene, camera);
 
     if (!paused) rafId = requestAnimationFrame(animate);
@@ -335,9 +352,23 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var loader = new THREE.TextureLoader(manager);
   var dayTex = loader.load("assets/textures/earth-day.jpg");
   dayTex.colorSpace = THREE.SRGBColorSpace;
+  dayTex.anisotropy = maxAnisotropy;
   var cloudTex = loader.load("assets/textures/earth-clouds.png");
+  cloudTex.anisotropy = maxAnisotropy;
   globeMat.map = dayTex;
   cloudMat.map = cloudTex;
+
+  // Higher-resolution day map, swapped in once it's decoded — loaded on its
+  // own loader (outside `manager`) so it never blocks first paint or the
+  // fallback timeout; the page is fully usable on the 2K placeholder above
+  // while this streams in behind it.
+  new THREE.TextureLoader().load("assets/textures/earth-day-hires.jpg", function (hiResTex) {
+    hiResTex.colorSpace = THREE.SRGBColorSpace;
+    hiResTex.anisotropy = maxAnisotropy;
+    globeMat.map = hiResTex;
+    globeMat.needsUpdate = true;
+    dayTex.dispose();
+  });
 
   fallbackTimer = setTimeout(activateFallback, 9000);
 })();
