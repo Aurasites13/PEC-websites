@@ -23,8 +23,8 @@
   --shadow: 0 12px 32px -18px rgba(28,27,25,0.28);
   --transition: 220ms cubic-bezier(.4,0,.2,1);
 
-  --navy: #0A1524;
-  --navy-soft: #14243D;
+  --navy: #070D1A;
+  --navy-soft: #0E192B;
   --header-h: 81px; /* .site-header's actual rendered height — kept in sync manually */
 }
 
@@ -278,8 +278,8 @@ hr.rule {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(10,21,36,0.72) 0%, rgba(10,21,36,0.28) 42%, rgba(10,21,36,0) 62%),
-              linear-gradient(0deg, rgba(10,21,36,0.55) 0%, rgba(10,21,36,0) 26%);
+  background: linear-gradient(90deg, rgba(7,13,26,0.72) 0%, rgba(7,13,26,0.28) 42%, rgba(7,13,26,0) 62%),
+              linear-gradient(0deg, rgba(7,13,26,0.55) 0%, rgba(7,13,26,0) 26%);
 }
 
 /* Branding moment shown at scroll 0, faded out by JS as the globe begins

@@ -23,7 +23,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var CLOUD_R = GLOBE_R * 1.012;
   var JAPAN_LAT = 36;
   var JAPAN_LON = 138;
-  var NAVY = 0x0a1524;
+  var NAVY = 0x070d1a; // kept in sync with --navy in css/style.css
 
   var fallbackActivated = false;
   var fallbackTimer = null;
