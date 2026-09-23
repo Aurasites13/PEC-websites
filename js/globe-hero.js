@@ -296,7 +296,16 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     updateOverlay();
     renderer.render(scene, camera);
 
-    if (!paused) rafId = requestAnimationFrame(animate);
+    // Clearing rafId here (rather than leaving it holding a stale,
+    // already-fired id) is what lets the IntersectionObserver below
+    // correctly detect "the loop isn't running" and restart it when the
+    // hero scrolls back into view — otherwise scrolling back up after the
+    // hero had scrolled fully out of view left the canvas frozen forever.
+    if (!paused) {
+      rafId = requestAnimationFrame(animate);
+    } else {
+      rafId = null;
+    }
   }
 
   function finalizeReady() {
