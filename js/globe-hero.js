@@ -20,7 +20,6 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
   var GLOBE_R = 1;
   var CLOUD_R = GLOBE_R * 1.012;
-  var GLOW_R = GLOBE_R * 1.06;
   var JAPAN_LAT = 36;
   var JAPAN_LON = 138;
   var NAVY = 0x0a1524;
@@ -110,39 +109,6 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   });
   var cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
   globeGroup.add(cloudMesh);
-
-  var glowMat = new THREE.ShaderMaterial({
-    uniforms: {
-      glowColor: { value: new THREE.Color(0xc9ad6e) },
-      glowOpacity: { value: 0.9 }
-    },
-    vertexShader: [
-      "varying vec3 vNormal;",
-      "varying vec3 vViewDir;",
-      "void main() {",
-      "  vNormal = normalize(normalMatrix * normal);",
-      "  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
-      "  vViewDir = normalize(-mvPosition.xyz);",
-      "  gl_Position = projectionMatrix * mvPosition;",
-      "}"
-    ].join("\n"),
-    fragmentShader: [
-      "varying vec3 vNormal;",
-      "varying vec3 vViewDir;",
-      "uniform vec3 glowColor;",
-      "uniform float glowOpacity;",
-      "void main() {",
-      "  float fresnel = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewDir)), 0.0), 2.8);",
-      "  gl_FragColor = vec4(glowColor, fresnel * glowOpacity);",
-      "}"
-    ].join("\n"),
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    side: THREE.FrontSide
-  });
-  var glowMesh = new THREE.Mesh(new THREE.SphereGeometry(GLOW_R, 48, 48), glowMat);
-  globeGroup.add(glowMesh);
 
   function buildStars() {
     var count = 1200;
