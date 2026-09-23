@@ -136,17 +136,22 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var startDir = new THREE.Vector3(0.15, 0.08, 1).normalize();
 
   // ---------- Responsive framing ----------
-  var framing = { distStart: 4.6, distEnd: 1.85, fov: 44 };
+  // distEnd is deliberately not as tight as it could be: any real web
+  // texture starts looking soft once the camera is close enough to fill
+  // the frame with a very small angular slice of the globe, so backing off
+  // a bit keeps the final "arrival" close-up readable/crisp rather than
+  // chasing a magnification level no reasonably-sized texture can satisfy.
+  var framing = { distStart: 4.6, distEnd: 2.15, fov: 44 };
   function computeFraming(aspect) {
-    var distStart = 4.6, distEnd = 1.85, fov = 44;
+    var distStart = 4.6, distEnd = 2.15, fov = 44;
     if (aspect < 1) {
       var k = Math.min(1.9, 1 + (1 - aspect) * 1.15);
       distStart = 4.6 * k;
-      distEnd = 1.85 * k;
+      distEnd = 2.15 * k;
       fov = 47;
     } else if (aspect < 1.35) {
       distStart = 4.2;
-      distEnd = 1.75;
+      distEnd = 2.05;
       fov = 45;
     }
     return { distStart: distStart, distEnd: distEnd, fov: fov };
@@ -216,6 +221,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     var rect = wrapEl.getBoundingClientRect();
     var total = rect.height - window.innerHeight;
     targetProgress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
+    if (targetProgress > 0.45) maybeLoadHiRes();
   }
 
   var scrollTicking = false;
@@ -357,17 +363,22 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   globeMat.map = dayTex;
   cloudMat.map = cloudTex;
 
-  // Higher-resolution day map, swapped in once it's decoded — loaded on its
-  // own loader (outside `manager`) so it never blocks first paint or the
-  // fallback timeout; the page is fully usable on the 2K placeholder above
-  // while this streams in behind it.
-  new THREE.TextureLoader().load("assets/textures/earth-day-hires.jpg", function (hiResTex) {
-    hiResTex.colorSpace = THREE.SRGBColorSpace;
-    hiResTex.anisotropy = maxAnisotropy;
-    globeMat.map = hiResTex;
-    globeMat.needsUpdate = true;
-    dayTex.dispose();
-  });
+  // Higher-resolution day map (native 5400x2700, needed for the close-in
+  // Japan zoom to read as sharp rather than upscaled/soft), fetched only
+  // once scrolling actually approaches that zoomed-in state — not eagerly
+  // on load — so visitors who never scroll past the fold never pay for it.
+  var hiResRequested = false;
+  function maybeLoadHiRes() {
+    if (hiResRequested) return;
+    hiResRequested = true;
+    new THREE.TextureLoader().load("assets/textures/earth-day-hires.jpg", function (hiResTex) {
+      hiResTex.colorSpace = THREE.SRGBColorSpace;
+      hiResTex.anisotropy = maxAnisotropy;
+      globeMat.map = hiResTex;
+      globeMat.needsUpdate = true;
+      dayTex.dispose();
+    });
+  }
 
   fallbackTimer = setTimeout(activateFallback, 9000);
 })();
