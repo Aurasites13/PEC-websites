@@ -282,6 +282,25 @@ hr.rule {
               linear-gradient(0deg, rgba(10,21,36,0.55) 0%, rgba(10,21,36,0) 26%);
 }
 
+/* Branding moment shown at scroll 0, faded out by JS as the globe begins
+   its zoom (see updateOverlay in globe-hero.js) — driven by the same
+   scroll-progress value as everything else in the hero, not a separate
+   timer, so it never fights the fly-through for attention. */
+.hero3d-wordmark {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: min(50vw, 380px);
+  filter: invert(1);
+  opacity: 1;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .hero3d-wordmark { width: min(72vw, 300px); top: 40%; }
+}
+
 .hero3d-content { position: relative; z-index: 3; width: 100%; }
 
 .hero3d-text {
@@ -377,7 +396,13 @@ hr.rule {
 }
 .hero-3d-wrap.hero3d-fallback .hero3d-canvas,
 .hero-3d-wrap.hero3d-fallback .hero3d-loading,
-.hero-3d-wrap.hero3d-fallback .hero3d-cue { display: none; }
+.hero-3d-wrap.hero3d-fallback .hero3d-cue,
+.hero-3d-wrap.hero3d-fallback .hero3d-wordmark { display: none; }
+
+/* Reduced motion renders one static frame already past the fly-through's
+   start — the wordmark's branding moment belongs before that, so it's
+   just hidden rather than animated in and immediately back out. */
+.hero3d-static .hero3d-wordmark { display: none; }
 .hero-3d-wrap.hero3d-fallback .hero3d-text { opacity: 1 !important; transform: none !important; }
 
 .hero-3d-wrap.hero3d-static .hero3d-text { opacity: 1; transform: none; }
@@ -387,7 +412,8 @@ html:not(.js) .hero-3d-wrap { height: auto; }
 html:not(.js) .hero-3d-sticky { position: static; height: auto; min-height: 0; padding: 96px 0; }
 html:not(.js) .hero3d-canvas,
 html:not(.js) .hero3d-loading,
-html:not(.js) .hero3d-cue { display: none; }
+html:not(.js) .hero3d-cue,
+html:not(.js) .hero3d-wordmark { display: none; }
 html:not(.js) .hero3d-text { opacity: 1; transform: none; }
 
 @media (max-width: 640px) {

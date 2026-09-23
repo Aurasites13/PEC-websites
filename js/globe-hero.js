@@ -14,6 +14,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var loadingEl = document.getElementById("hero3dLoading");
   var textEl = document.getElementById("hero3dText");
   var cueEl = document.getElementById("hero3dCue");
+  var wordmarkEl = document.getElementById("hero3dWordmark");
   if (!wrapEl || !stickyEl || !canvasEl) return;
 
   var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -211,6 +212,10 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     textEl.style.opacity = String(reveal);
     textEl.style.transform = "translateY(" + (18 * (1 - reveal)) + "px)";
     if (cueEl) cueEl.style.opacity = String(1 - smoothstep(0, 0.06, progress));
+    // Branding wordmark: fully visible at rest, faded out well before the
+    // headline starts revealing (reveal starts at progress 0.5) so the two
+    // never overlap or compete for attention.
+    if (wordmarkEl) wordmarkEl.style.opacity = String(1 - smoothstep(0, 0.13, progress));
   }
 
   // Only updates the raw scroll-derived target — the visible `progress` is
