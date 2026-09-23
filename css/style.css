@@ -292,13 +292,31 @@ hr.rule {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   width: min(50vw, 380px);
-  filter: invert(1);
   opacity: 1;
   pointer-events: none;
 }
+.hero3d-wordmark-mark {
+  display: block;
+  width: 100%;
+  filter: invert(1);
+}
+.hero3d-wordmark-sub {
+  font-family: 'Cormorant', 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(0.72rem, 1.7vw, 0.92rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bg);
+  white-space: nowrap;
+}
 @media (max-width: 640px) {
-  .hero3d-wordmark { width: min(72vw, 300px); top: 40%; }
+  .hero3d-wordmark { width: min(72vw, 300px); top: 40%; gap: 10px; }
+  .hero3d-wordmark-sub { font-size: clamp(0.58rem, 3.2vw, 0.74rem); letter-spacing: 0.18em; }
 }
 
 .hero3d-content { position: relative; z-index: 3; width: 100%; }
