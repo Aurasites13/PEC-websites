@@ -298,9 +298,15 @@ hr.rule {
    its zoom (see updateOverlay in globe-hero.js) — driven by the same
    scroll-progress value as everything else in the hero, not a separate
    timer, so it never fights the fly-through for attention. */
+/* top/left: 50% is not a stylistic choice — camera.lookAt(origin) at
+   progress 0 (see updateCamera in globe-hero.js) always projects the
+   globe's center to exactly the midpoint of the canvas, for any aspect
+   ratio. A different fixed percentage happened to look close on desktop
+   but drifted visibly off-globe on mobile, where the globe itself renders
+   smaller relative to the viewport (see computeFraming's aspect scaling). */
 .hero3d-wordmark {
   position: absolute;
-  top: 42%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
@@ -327,7 +333,7 @@ hr.rule {
   white-space: nowrap;
 }
 @media (max-width: 640px) {
-  .hero3d-wordmark { width: min(72vw, 300px); top: 40%; gap: 10px; }
+  .hero3d-wordmark { width: min(72vw, 300px); gap: 10px; }
   .hero3d-wordmark-sub { font-size: clamp(0.58rem, 3.2vw, 0.74rem); letter-spacing: 0.18em; }
 }
 
