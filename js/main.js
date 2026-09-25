@@ -47,9 +47,14 @@
         links.classList.toggle("open");
         var expanded = links.classList.contains("open");
         toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+        toggle.classList.toggle("open", expanded);
       });
       links.querySelectorAll("a").forEach(function (a) {
-        a.addEventListener("click", function () { links.classList.remove("open"); });
+        a.addEventListener("click", function () {
+          links.classList.remove("open");
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.classList.remove("open");
+        });
       });
     }
 

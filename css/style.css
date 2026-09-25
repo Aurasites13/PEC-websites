@@ -223,11 +223,16 @@ hr.rule {
   margin: 5px 0;
   transition: var(--transition);
 }
+/* Morphs into an X while the mobile menu is open, so the control visibly
+   affords "tap again to close" instead of staying a static hamburger. */
+.nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
 @media (max-width: 920px) {
   .nav-links {
     position: fixed;
-    inset: 66px 0 0 0;
+    inset: var(--header-h) 0 0 0;
     background: var(--bg);
     flex-direction: column;
     justify-content: flex-start;
@@ -241,6 +246,13 @@ hr.rule {
   .nav-links.open { transform: translateX(0); }
   .nav-links a { font-size: 1rem; }
   .nav-toggle { display: block; }
+  /* Below the ~44px touch-target minimum at the compact desktop size. */
+  .lang-toggle button { padding: 13px 14px; }
+  /* The taller touch target above makes .site-header itself ~3.5px taller
+     on mobile than the desktop value baked into --header-h (used to size
+     the hero and offset the mobile nav panel) — override it here so both
+     stay pixel-accurate instead of drifting out of sync again. */
+  :root { --header-h: 84.5px; }
 }
 
 /* ---------- Hero: 3D globe fly-through ---------- */
@@ -619,7 +631,9 @@ html:not(.js) .hero3d-text { opacity: 1; transform: none; }
   border: 1px solid var(--line);
   background: var(--white);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  /* 16px minimum — anything smaller makes iOS Safari auto-zoom the page
+     on focus, which is jarring and requires the user to zoom back out. */
+  font-size: 1rem;
   color: var(--ink);
   border-radius: var(--radius);
 }
@@ -737,6 +751,7 @@ html:not(.js) .hero3d-text { opacity: 1; transform: none; }
   gap: 24px;
 }
 @media (max-width: 880px) { .steps { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
 .step { text-align: center; }
 .step .num {
   font-family: var(--font-serif);
