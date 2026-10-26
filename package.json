@@ -1,0 +1,9 @@
+{
+  "name": "pec-website",
+  "private": true,
+  "description": "PEC — Private Education Concierge marketing site. Static HTML/CSS/JS, no bundler; this package.json exists only for the content-build helper scripts.",
+  "scripts": {
+    "build": "node scripts/build-content.mjs && node scripts/verify-prices.mjs",
+    "verify": "node scripts/verify-prices.mjs"
+  }
+}
