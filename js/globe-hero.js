@@ -375,4 +375,35 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   cloudMat.map = cloudTex;
 
   fallbackTimer = setTimeout(activateFallback, 9000);
+
+  // ---------- #japan deep link ----------
+  // The hero has no real anchor target (it's one pinned element the whole
+  // way through), so a normal <a href="index.html#japan"> can't jump to
+  // "the Japan moment" on its own. Instead, on that hash we compute the
+  // scroll position that corresponds to a progress value deep into the
+  // reveal (text fully shown, wordmark long faded) and scroll there
+  // directly; the camera then eases to match via the normal animate()
+  // loop. In reduced-motion/fallback modes the text is already shown at
+  // rest with no scroll-driven camera, so this just scrolls the hero into
+  // view instead of computing a progress-based offset.
+  var JAPAN_STAGE_PROGRESS = 0.88;
+  function scrollToJapanStage() {
+    if (fallbackActivated || reducedMotion) {
+      wrapEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    var wrapTop = wrapEl.getBoundingClientRect().top + window.scrollY;
+    var total = wrapEl.offsetHeight - window.innerHeight;
+    if (total <= 0) { wrapEl.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    window.scrollTo({ top: wrapTop + JAPAN_STAGE_PROGRESS * total, behavior: "smooth" });
+  }
+  function maybeScrollToJapanStage() {
+    if (location.hash !== "#japan") return;
+    if (ready || fallbackActivated) { scrollToJapanStage(); return; }
+    setTimeout(maybeScrollToJapanStage, 150);
+  }
+  maybeScrollToJapanStage();
+  window.addEventListener("hashchange", function () {
+    if (location.hash === "#japan") scrollToJapanStage();
+  });
 })();

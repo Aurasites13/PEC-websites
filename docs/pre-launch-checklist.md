@@ -7,6 +7,23 @@ sign, full consultation-form rebuild). Nothing below is broken — it's what
 still needs real content, a decision, or a follow-up before this branch goes
 live. Grouped by type; each item names the file/section.
 
+## 0a. Post-merge follow-ups (fourth pass)
+
+- `privacy.html`, `terms.html`, and `sct.html` are now **noindex** (they
+  were the only 3 indexable pages before). This is temporary: `sct.html`
+  still has a `[to be confirmed: sole proprietorship or registered entity
+  name]` placeholder pending lawyer review. `sitemap.xml` is empty until
+  that's resolved; re-add the 3 legal URLs and remove their noindex tag
+  once the lawyer signs off.
+- The site-menu "What is PEC" link now goes to `index.html#japan`, which
+  scrolls to the Japan-arrival moment on the globe (see the `#japan`
+  handling in `js/globe-hero.js`) instead of the Company page.
+- The site-menu "Courses" submenu now lists the 7 real product names from
+  `data/products.js`, each linking to its section on `services.html`
+  (e.g. `services.html#tutoring`), replacing the 4 "[Course Name]"
+  placeholders. The homepage's own Course Options cards (`index.html`)
+  are unchanged and still placeholder — see §1.
+
 ## 0. This round's changes (new, not yet in the sections below)
 
 - Globe: fixed the blurry-on-first-scroll bug (was swapping to a hi-res

@@ -100,14 +100,17 @@
     // are PEC's own.
     var PEC_MENU = [
       { en: "TOP", ja: "TOP", href: "index.html" },
-      { en: "What is PEC", ja: "PECとは", href: "about.html" },
+      { en: "What is PEC", ja: "PECとは", href: "index.html#japan" },
       {
         en: "Courses", ja: "コース一覧", expandable: true,
         children: [
-          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
-          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
-          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
-          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" }
+          { en: "Private Academic Tutoring", ja: "プライベート・アカデミック・チュータリング", href: "services.html#tutoring" },
+          { en: "Exam Preparation", ja: "資格試験対策", href: "services.html#exam" },
+          { en: "Personal Education Concierge", ja: "パーソナル・エデュケーション・コンシェルジュ", href: "services.html#concierge" },
+          { en: "International Education Advisory", ja: "海外進学・教育戦略", href: "services.html#intl-advisory" },
+          { en: "Swiss Education Advisory", ja: "スイス留学・進学戦略", href: "services.html#swiss-advisory" },
+          { en: "Application Execution", ja: "出願実行サポート", href: "services.html#execution" },
+          { en: "Swiss Post-Enrollment Concierge", ja: "スイス入学後・年間教育コンシェルジュ", href: "services.html#swiss-post" }
         ]
       },
       { en: "About Our Lessons", ja: "授業について", href: "lessons.html" },
