@@ -23,7 +23,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var CLOUD_R = GLOBE_R * 1.012;
   var JAPAN_LAT = 36;
   var JAPAN_LON = 138;
-  var NAVY = 0x070d1a; // kept in sync with --navy in css/style.css
+  var GLOBE_BG = 0xf4f4f1; // Tender White — kept in sync with --tender-white in css/style.css
 
   var fallbackActivated = false;
   var fallbackTimer = null;
@@ -85,16 +85,17 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var maxAnisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
 
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(NAVY);
-  scene.fog = new THREE.Fog(NAVY, 5, 11);
+  scene.background = new THREE.Color(GLOBE_BG);
+  scene.fog = new THREE.Fog(GLOBE_BG, 5, 11);
 
   var camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
   camera.position.set(0, 0, 4.6);
 
-  // Brighter, warmer-neutral fill so shadowed ocean reads as deep blue
-  // rather than near-black, without flattening the day/night contrast.
-  var ambient = new THREE.AmbientLight(0x8a94aa, 0.85);
-  var sun = new THREE.DirectionalLight(0xfff2df, 2.3);
+  // Lifted from the old dark-hero values: on a light (Tender White) backdrop,
+  // shadowed ocean needs more fill or it reads as a harsh dark silhouette
+  // edge against the white page instead of a shaded sphere.
+  var ambient = new THREE.AmbientLight(0x8a94aa, 1.15);
+  var sun = new THREE.DirectionalLight(0xfff2df, 2.1);
   scene.add(ambient, sun);
 
   var globeGroup = new THREE.Group();

@@ -58,25 +58,37 @@
       });
     }
 
-    // ---------- FAQ accordion ----------
+    // ---------- FAQ / Q&A accordion ----------
+    // Shared by faq.html's accordion and the homepage Q&A section (both use
+    // the same .faq-item/.faq-q/.faq-a markup). Native <button> already
+    // gives keyboard operability (Enter/Space); this adds the aria wiring
+    // a screen reader needs to announce open/closed state correctly.
+    var faqAutoId = 0;
     document.querySelectorAll(".faq-item").forEach(function (item) {
       var q = item.querySelector(".faq-q");
       var a = item.querySelector(".faq-a");
       if (!q || !a) return;
+      faqAutoId += 1;
+      if (!a.id) a.id = "faq-answer-" + faqAutoId;
+      q.setAttribute("aria-expanded", "false");
+      q.setAttribute("aria-controls", a.id);
       q.addEventListener("click", function () {
         var isOpen = item.classList.contains("open");
         item.parentElement.querySelectorAll(".faq-item.open").forEach(function (openItem) {
           if (openItem !== item) {
             openItem.classList.remove("open");
             openItem.querySelector(".faq-a").style.maxHeight = null;
+            openItem.querySelector(".faq-q").setAttribute("aria-expanded", "false");
           }
         });
         if (isOpen) {
           item.classList.remove("open");
           a.style.maxHeight = null;
+          q.setAttribute("aria-expanded", "false");
         } else {
           item.classList.add("open");
           a.style.maxHeight = a.scrollHeight + "px";
+          q.setAttribute("aria-expanded", "true");
         }
       });
     });
@@ -103,6 +115,85 @@
       var href = a.getAttribute("href");
       if (href === path) a.classList.add("active");
     });
+
+    // ---------- Floating consultation sign + media side-toggle ----------
+    // Injected once here (not hand-copied into all 11 pages) so every page
+    // gets identical markup/behavior and there's one place to edit later.
+    // Pattern follows the MMBH analysis (docs/mmbh-analysis.md): a fixed
+    // element that stays pinned through scroll, right-edge vertical tab on
+    // desktop, bottom full-width bar on mobile.
+    (function initFloatingChrome() {
+      var cta = document.createElement("a");
+      cta.id = "pecFloatCta";
+      cta.href = "contact.html";
+      cta.className = "float-cta";
+      cta.innerHTML =
+        '<span data-lang-inline="en">Free Consultation</span>' +
+        '<span data-lang-inline="ja">無料相談</span>';
+      document.body.appendChild(cta);
+
+      var toggle = document.createElement("button");
+      toggle.id = "pecMediaToggle";
+      toggle.type = "button";
+      toggle.className = "media-toggle";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", "pecMediaDrawer");
+      toggle.innerHTML =
+        '<span data-lang-inline="en">Media</span>' +
+        '<span data-lang-inline="ja">メディア</span>';
+      document.body.appendChild(toggle);
+
+      var drawer = document.createElement("div");
+      drawer.id = "pecMediaDrawer";
+      drawer.className = "media-drawer";
+      drawer.setAttribute("role", "dialog");
+      drawer.setAttribute("aria-modal", "true");
+      drawer.setAttribute("aria-labelledby", "pecMediaDrawerTitle");
+      drawer.innerHTML =
+        '<div class="media-drawer-scrim" data-media-close></div>' +
+        '<div class="media-drawer-panel">' +
+          '<button type="button" class="media-drawer-close" data-media-close aria-label="Close">&times;</button>' +
+          '<h3 id="pecMediaDrawerTitle">' +
+            '<span data-lang-inline="en">Media &amp; Appearances</span>' +
+            '<span data-lang-inline="ja">メディア掲載・出演情報</span>' +
+          '</h3>' +
+          '<p class="media-drawer-note">' +
+            '<span data-lang-inline="en">Placeholder section — no media appearances, press coverage, or logos have been added yet. This space is reserved for real coverage once confirmed.</span>' +
+            '<span data-lang-inline="ja">プレースホルダーです。メディア出演・掲載実績はまだ確定しておらず、確認が取れ次第こちらに掲載予定です。</span>' +
+          '</p>' +
+          '<div class="media-drawer-grid">' +
+            Array.from({ length: 6 }).map(function () {
+              return '<div class="media-placeholder-tile">' +
+                '<span data-lang-inline="en">Logo placeholder</span>' +
+                '<span data-lang-inline="ja">ロゴ・プレースホルダー</span>' +
+              '</div>';
+            }).join("") +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(drawer);
+
+      function openDrawer() {
+        drawer.classList.add("open");
+        toggle.setAttribute("aria-expanded", "true");
+        drawer.querySelector(".media-drawer-close").focus();
+        document.addEventListener("keydown", onKeydown);
+      }
+      function closeDrawer() {
+        drawer.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+        document.removeEventListener("keydown", onKeydown);
+      }
+      function onKeydown(e) {
+        if (e.key === "Escape") closeDrawer();
+      }
+      toggle.addEventListener("click", function () {
+        if (drawer.classList.contains("open")) closeDrawer(); else openDrawer();
+      });
+      drawer.querySelectorAll("[data-media-close]").forEach(function (el) {
+        el.addEventListener("click", closeDrawer);
+      });
+    })();
 
     // ---------- Footer year ----------
     document.querySelectorAll("[data-year]").forEach(function (el) {

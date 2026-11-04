@@ -1,31 +1,51 @@
 /* ==========================================================================
    PEC — Private Education Concierge
-   Design system: cream / charcoal / oxblood / soft gold
+   Design system (MMBH-informed redesign, redesign-mmbh branch)
+
+   Brand palette — the ONLY colors used anywhere on the site. No navy, gold,
+   or pure black: every other token below is a direct value or a CSS
+   color-mix() of these six.
    ========================================================================== */
 
 :root {
-  --bg: #FAF8F5;
-  --bg-alt: #F3EFE9;
-  --ink: #1C1B19;
-  --ink-soft: #4A4744;
-  --line: #E4DED4;
-  --accent: #6B2A3A;      /* oxblood / burgundy */
-  --accent-soft: #8C4353;
-  --gold: #B8A46E;
-  --card-bg: #FFFFFF;
-  --white: #FFFFFF;
+  /* ---- Brand palette (do not add colors outside this set) ---- */
+  --berry-chocolate: #3A050F;  /* primary brand color / main burgundy */
+  --blind-forest: #232D1D;     /* supporting — dark green-black */
+  --powdered-cocoa: #2D1A05;   /* supporting — dark warm brown */
+  --relax-yellow: #F4E295;     /* accent + free-consultation sign ONLY — never text on light bg */
+  --tender-white: #F4F4F1;     /* light background */
+  --linen: #E8E3CF;            /* alternate light background */
 
-  --font-serif: 'Cormorant Garamond', 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
-  --font-sans: 'Jost', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  /* ---- Semantic tokens (map to the palette above) ---- */
+  --bg: var(--tender-white);
+  --bg-alt: var(--linen);
+  --ink: var(--blind-forest);                /* headings, primary text */
+  --ink-soft: var(--powdered-cocoa);         /* body copy, secondary text */
+  --line: var(--linen);
+  --accent: var(--berry-chocolate);          /* links, eyebrows, icons, CTAs */
+  --accent-soft: color-mix(in srgb, var(--berry-chocolate) 80%, var(--powdered-cocoa));
+  --accent-hover: color-mix(in srgb, var(--berry-chocolate) 88%, black);
+  --card-bg: var(--linen);                   /* card fill on a --bg page */
+  --card-bg-on-dark: var(--tender-white);    /* card fill on a dark full-bleed section */
+  --white: var(--tender-white);              /* kept for legacy references; resolves to a palette color */
+
+  /* ---- Typography (see docs/font-preview.html for the 3 evaluated pairings) ---- */
+  --font-display: 'Bodoni Moda', 'Shippori Mincho', serif;
+  --font-display-ja: 'Shippori Mincho', 'Bodoni Moda', serif;
+  --font-body: 'Manrope', 'Noto Sans JP', sans-serif;
+  --font-body-ja: 'Noto Sans JP', 'Manrope', sans-serif;
+  /* Legacy aliases — most of the stylesheet below still reads these two;
+     keep them pointed at the display/body pair so nothing needs touching
+     twice when the pairing changes. */
+  --font-serif: var(--font-display), var(--font-display-ja);
+  --font-sans: var(--font-body), var(--font-body-ja);
 
   --maxw: 1180px;
   --radius: 2px;
-  --shadow: 0 12px 32px -18px rgba(28,27,25,0.28);
+  --shadow: 0 12px 32px -18px rgba(35,45,29,0.22);
   --transition: 220ms cubic-bezier(.4,0,.2,1);
 
-  --navy: #070D1A;
-  --navy-soft: #0E192B;
-  --header-h: 81px; /* .site-header's actual rendered height — kept in sync manually */
+  --header-h: 96px; /* .site-header's actual rendered height — kept in sync manually */
 }
 
 * { box-sizing: border-box; }
@@ -165,8 +185,11 @@ hr.rule {
   gap: 24px;
 }
 .brand img { height: 30px; width: auto; }
-.brand img.brand-monogram { height: 44px; }
+.brand img.brand-wordmark { height: 48px; }
 .brand { display: flex; align-items: center; }
+@media (max-width: 640px) {
+  .brand img.brand-wordmark { height: 38px; }
+}
 
 .nav-links {
   display: flex;
@@ -274,7 +297,7 @@ hr.rule {
   overflow: hidden;
   display: flex;
   align-items: center;
-  background: radial-gradient(120% 120% at 50% 38%, var(--navy-soft) 0%, var(--navy) 70%);
+  background: radial-gradient(120% 120% at 50% 38%, var(--tender-white) 0%, var(--linen) 100%);
 }
 
 .hero3d-canvas {
@@ -290,8 +313,12 @@ hr.rule {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(7,13,26,0.72) 0%, rgba(7,13,26,0.28) 42%, rgba(7,13,26,0) 62%),
-              linear-gradient(0deg, rgba(7,13,26,0.55) 0%, rgba(7,13,26,0) 26%);
+  /* Light-theme equivalent of the old dark vignette: tints the globe near
+     the text column toward the page background instead of darkening it,
+     so hero3d-text stays legible without putting a dark edge on a white
+     page. Tender White (244,244,241) at the same opacities/stops as before. */
+  background: linear-gradient(90deg, rgba(244,244,241,0.85) 0%, rgba(244,244,241,0.38) 42%, rgba(244,244,241,0) 62%),
+              linear-gradient(0deg, rgba(244,244,241,0.6) 0%, rgba(244,244,241,0) 26%);
 }
 
 /* Branding moment shown at scroll 0, faded out by JS as the globe begins
@@ -321,15 +348,16 @@ hr.rule {
 .hero3d-wordmark-mark {
   display: block;
   width: 100%;
-  filter: invert(1);
+  /* Logo asset is ink-colored; no invert needed now the globe sits on a
+     light background (it was flipped to white for the old dark-navy hero). */
 }
 .hero3d-wordmark-sub {
-  font-family: 'Cormorant', 'Cormorant Garamond', serif;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(0.72rem, 1.7vw, 0.92rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bg);
+  color: var(--ink);
   white-space: nowrap;
 }
 @media (max-width: 640px) {
@@ -345,13 +373,9 @@ hr.rule {
   transform: translateY(18px);
   will-change: opacity, transform;
 }
-.hero3d-text .eyebrow { color: var(--gold); }
-.hero3d-text h1 { color: var(--bg); }
-.hero3d-text .lead { color: rgba(250,248,245,0.82); }
-.hero3d-text .btn-primary { background: var(--gold); border-color: var(--gold); color: #1C1B19; }
-.hero3d-text .btn-primary:hover { background: #CDBB85; border-color: #CDBB85; }
-.hero3d-text .btn-outline { border-color: rgba(250,248,245,0.55); color: var(--bg); }
-.hero3d-text .btn-outline:hover { background: var(--bg); color: var(--navy); }
+/* No color overrides needed here anymore: the globe now sits on the same
+   light background as the rest of the site, so h1/.lead/.eyebrow/.btn-*
+   inherit their normal page styling instead of a dark-hero-specific set. */
 
 .hero3d-cue {
   position: absolute;
@@ -367,15 +391,14 @@ hr.rule {
   font-weight: 500;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(250,248,245,0.92);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+  color: var(--ink-soft);
   transition: opacity 300ms ease;
 }
 .hero3d-cue i {
   display: block;
   width: 1px;
   height: 30px;
-  background: linear-gradient(var(--gold), rgba(201,173,110,0));
+  background: linear-gradient(var(--accent), rgba(58,5,15,0));
   animation: hero3d-cue-move 1.8s ease-in-out infinite;
 }
 @keyframes hero3d-cue-move {
@@ -392,20 +415,20 @@ hr.rule {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: var(--navy);
+  background: var(--bg);
   transition: opacity 500ms ease, visibility 0s 500ms;
 }
 .hero3d-loading.is-hidden { opacity: 0; visibility: hidden; }
 .hero3d-loading-mark {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.3rem;
   letter-spacing: 0.24em;
-  color: var(--gold);
+  color: var(--accent);
 }
 .hero3d-loading-track {
   width: 120px;
   height: 2px;
-  background: rgba(250,248,245,0.15);
+  background: rgba(58,5,15,0.12);
   overflow: hidden;
   border-radius: 2px;
 }
@@ -413,7 +436,7 @@ hr.rule {
   display: block;
   width: 40%;
   height: 100%;
-  background: var(--gold);
+  background: var(--accent);
   animation: hero3d-loading-sweep 1.15s ease-in-out infinite;
 }
 @keyframes hero3d-loading-sweep {
@@ -722,7 +745,7 @@ section.alt .bundle-note { color: var(--ink-soft); }
   padding: 34px 30px;
   border-radius: var(--radius);
 }
-.quote-card .mark { font-family: var(--font-serif); font-size: 2.6rem; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+.quote-card .mark { font-family: var(--font-serif); font-size: 2.6rem; color: var(--accent); line-height: 1; margin-bottom: 8px; }
 .quote-card p.quote { font-style: italic; color: var(--ink); font-size: 1.02rem; }
 .quote-meta { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
 .quote-meta .avatar {
@@ -907,7 +930,7 @@ section.alt .bundle-note { color: var(--ink-soft); }
 .step .num {
   font-family: var(--font-serif);
   font-size: 2.2rem;
-  color: var(--gold);
+  color: var(--accent);
   margin-bottom: 10px;
 }
 
@@ -931,3 +954,156 @@ html:not([lang="ja"]) [data-lang-block="en"] { display: block; }
 .reveal { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms ease; }
 .js .reveal { opacity: 0; transform: translateY(16px); }
 .js .reveal.in { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ==========================================================================
+   Floating consultation sign + media side-toggle
+   Injected into every page by js/main.js (initFloatingChrome) — see that
+   file for the markup. Desktop: right-edge vertical tab (CTA) + left-edge
+   vertical tab (media). Mobile: CTA becomes a bottom bar; media toggle
+   stays a small left-edge tab, parked above the CTA bar so neither covers
+   the other or any page controls.
+   ========================================================================== */
+.float-cta {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  background: var(--relax-yellow);
+  color: var(--berry-chocolate);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 26px 13px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: var(--shadow);
+  transition: padding var(--transition), background var(--transition);
+}
+.float-cta:hover,
+.float-cta:focus-visible {
+  background: color-mix(in srgb, var(--relax-yellow) 80%, var(--berry-chocolate) 20%);
+  padding-right: 18px;
+}
+.float-cta:focus-visible { outline: 2px solid var(--berry-chocolate); outline-offset: 2px; }
+
+.media-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 89;
+  background: var(--blind-forest);
+  color: var(--tender-white);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 20px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  border-radius: 0 8px 8px 0;
+  box-shadow: var(--shadow);
+}
+.media-toggle:hover,
+.media-toggle:focus-visible {
+  background: color-mix(in srgb, var(--blind-forest) 85%, var(--tender-white) 15%);
+}
+.media-toggle:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
+
+.media-drawer { position: fixed; inset: 0; z-index: 200; display: none; }
+.media-drawer.open { display: block; }
+.media-drawer-scrim {
+  position: absolute; inset: 0;
+  background: rgba(35,45,29,0.5);
+}
+.media-drawer-panel {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: min(420px, 88vw);
+  background: var(--blind-forest);
+  color: var(--tender-white);
+  padding: 72px 34px 40px;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 320ms ease;
+}
+.media-drawer.open .media-drawer-panel { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .media-drawer-panel { transition: none; }
+}
+.media-drawer-panel h3 {
+  color: var(--tender-white);
+  font-size: 1.3rem;
+  margin-bottom: 14px;
+}
+.media-drawer-note {
+  font-size: 0.86rem;
+  color: #D9D4C4;
+  border: 1px dashed rgba(244,244,241,0.35);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 28px;
+}
+.media-drawer-close {
+  position: absolute;
+  top: 24px; right: 28px;
+  background: none;
+  border: none;
+  color: var(--tender-white);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.media-drawer-close:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
+.media-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.media-placeholder-tile {
+  border: 1px dashed rgba(244,244,241,0.35);
+  border-radius: 4px;
+  padding: 22px 10px;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #BDB9AC;
+}
+
+@media (max-width: 760px) {
+  .float-cta {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    writing-mode: horizontal-tb;
+    text-align: center;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 0;
+    font-size: 0.86rem;
+  }
+  .float-cta:hover, .float-cta:focus-visible { padding-right: 20px; }
+  .media-toggle {
+    top: auto;
+    bottom: 76px;
+    transform: none;
+    padding: 14px 8px;
+    font-size: 0.64rem;
+  }
+  .media-drawer-panel { padding: 64px 24px 100px; }
+}
