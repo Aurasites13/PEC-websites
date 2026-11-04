@@ -100,14 +100,14 @@
     // are PEC's own.
     var PEC_MENU = [
       { en: "TOP", ja: "TOP", href: "index.html" },
-      { en: "What is PEC", ja: "PECとは", href: "index.html#what-pec-is" },
+      { en: "What is PEC", ja: "PECとは", href: "about.html" },
       {
         en: "Courses", ja: "コース一覧", expandable: true,
         children: [
-          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
-          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
-          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
-          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" }
+          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
+          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
+          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" },
+          { en: "[Course Name]", ja: "［コース名］", href: "course-detail-template.html" }
         ]
       },
       { en: "About Our Lessons", ja: "授業について", href: "lessons.html" },
@@ -233,8 +233,8 @@
       cta.href = "contact.html";
       cta.className = "float-cta";
       cta.innerHTML =
-        '<span data-lang-inline="en">Free Consultation</span>' +
-        '<span data-lang-inline="ja">無料相談</span>';
+        '<span data-lang-inline="en">Free Counseling</span>' +
+        '<span data-lang-inline="ja">無料カウンセリング</span>';
       document.body.appendChild(cta);
     })();
 
@@ -243,13 +243,56 @@
       el.textContent = new Date().getFullYear();
     });
 
-    // ---------- Contact form ----------
-    // Submits via Netlify Forms (works automatically once deployed to Netlify —
-    // no backend code needed). Falls back to a friendly inline message either way.
-    var form = document.querySelector("#contact-form");
+    // ---------- Counseling application form (contact.html) ----------
+    // Submits via Netlify Forms (works automatically once deployed to
+    // Netlify, no backend code needed). FormData grabs every field in the
+    // form generically, so every input/select/textarea/checkbox gets
+    // submitted without needing to list fields here by name.
+    var form = document.querySelector("#counseling-form");
     if (form) {
+      // "Other" radio groups: the free-text field next to each group only
+      // makes sense once its "Other" option is selected, so it stays
+      // hidden/non-required until then.
+      form.querySelectorAll("[data-other-group]").forEach(function (fieldset) {
+        var otherRadio = fieldset.querySelector('input[type="radio"][value="その他"]');
+        var otherField = fieldset.querySelector(".form-other-field");
+        var otherInput = otherField ? otherField.querySelector("input") : null;
+        if (!otherRadio || !otherField || !otherInput) return;
+        fieldset.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+          radio.addEventListener("change", function () {
+            var show = otherRadio.checked;
+            otherField.hidden = !show;
+            otherInput.required = show;
+            if (!show) otherInput.value = "";
+          });
+        });
+      });
+
+      var coursesFieldset = form.querySelector("#coursesFieldset");
+      var courseInputs = coursesFieldset ? coursesFieldset.querySelectorAll('input[name="coursesInterest"]') : [];
+
+      function validateCourses() {
+        if (!coursesFieldset) return true;
+        var checked = Array.prototype.some.call(courseInputs, function (c) { return c.checked; });
+        coursesFieldset.classList.toggle("has-error", !checked);
+        return checked;
+      }
+      courseInputs.forEach(function (c) {
+        c.addEventListener("change", validateCourses);
+      });
+
       form.addEventListener("submit", function (e) {
         e.preventDefault();
+
+        var coursesOk = validateCourses();
+        var nativeOk = form.checkValidity();
+        if (!nativeOk) { form.reportValidity(); return; }
+        if (!coursesOk) {
+          if (coursesFieldset) coursesFieldset.scrollIntoView({ block: "center", behavior: "smooth" });
+          return;
+        }
+
+        var submitBtn = form.querySelector('button[type="submit"]');
         var status = form.querySelector(".form-status");
         var data = new FormData(form);
         var encoded = new URLSearchParams(data).toString();
@@ -257,10 +300,11 @@
         function showStatus(ok) {
           if (!status) return;
           var lang = document.documentElement.getAttribute("lang");
+          status.className = "form-status" + (ok ? " form-success" : "");
           if (ok) {
             status.textContent = lang === "ja"
-              ? "送信ありがとうございます。担当より［プレースホルダー：対応時間未確定］以内にご連絡いたします。"
-              : "Thank you — we've received your message and will reply within [placeholder — response time not yet confirmed].";
+              ? "お申し込みありがとうございます。担当より［プレースホルダー：対応時間未確定］以内にご連絡いたします。"
+              : "Thank you for applying. We've received your application and will reply within [placeholder: response time not yet confirmed].";
           } else {
             status.textContent = lang === "ja"
               ? "送信中に問題が発生しました。info.pec.jp@gmail.com までメールにてご連絡ください。"
@@ -269,6 +313,7 @@
           status.style.display = "block";
         }
 
+        if (submitBtn) submitBtn.disabled = true;
         fetch("/", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -276,8 +321,12 @@
         }).then(function () {
           showStatus(true);
           form.reset();
+          form.querySelectorAll(".form-other-field").forEach(function (f) { f.hidden = true; });
+          if (coursesFieldset) coursesFieldset.classList.remove("has-error");
         }).catch(function () {
           showStatus(false);
+        }).finally(function () {
+          if (submitBtn) submitBtn.disabled = false;
         });
       });
     }

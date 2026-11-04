@@ -1,9 +1,62 @@
 # Pre-Launch Checklist — redesign-mmbh branch
 
-Updated after the second redesign pass (site menu rebuild, missing pages,
-unverified-claims sweep, contact-detail fix). Nothing below is broken — it's
-what still needs real content, a decision, or a follow-up before this branch
-goes live. Grouped by type; each item names the file/section.
+Updated after the third redesign pass ("more soul": globe fix, edge-to-edge
+header, bold color-block Course Options/PEC Difference with original
+illustrations, Fraunces/Zen Maru Gothic fonts, Q&A redesign, bigger floating
+sign, full consultation-form rebuild). Nothing below is broken — it's what
+still needs real content, a decision, or a follow-up before this branch goes
+live. Grouped by type; each item names the file/section.
+
+## 0. This round's changes (new, not yet in the sections below)
+
+- Globe: fixed the blurry-on-first-scroll bug (was swapping to a hi-res
+  texture mid-scroll; now loads the hi-res texture once, up front). Logo
+  and wordmark on the globe are now white with a drop shadow for
+  readability over Earth imagery. The old separate "What PEC Is" section
+  was removed; its copy now appears in a solid panel as the camera arrives
+  over Japan. Hero headline and buttons were removed entirely.
+- Deleted the "For Parents / For Teenagers / For Adults / For
+  International Families" pillar-chip section and all `.eyebrow` labels
+  site-wide (CSS rules removed too).
+- Header (`.nav-wrap`) is now edge-to-edge at every width (~24px side
+  margin), not inside the centered `.container`.
+- Course Options and The PEC Difference were rebuilt with full-bleed brand-
+  color sections, white rounded cards, and 8 original SVG illustrations
+  (flat-style characters, brand colors + Pink Blossom/Blue Glow accents,
+  varied skin tones). The PEC Difference is now 4 alternating color bands
+  (one each: Berry Chocolate, Relax Yellow, Powdered Cocoa, Blind Forest),
+  each with its own illustration and layout, not 4 identical cards.
+- Typography changed to Fraunces (EN titles) + Zen Maru Gothic (JA titles)
+  + Nunito/Zen Kaku Gothic New (body); see `docs/font-preview.html` for the
+  3 pairings evaluated. Title weights are now bolder (700).
+- Q&A redesigned as a bold Relax Yellow section with white rounded cards,
+  big circular "+" icon that rotates open.
+- Floating "Free Counseling" sign is significantly bigger (desktop tab and
+  mobile bar).
+- "Free Consultation" / 無料相談 renamed to "Free Counseling" / 無料カウンセリング
+  consistently site-wide (buttons, CTA headings, footer link, floating
+  sign) to match the new consultation-form title.
+- `contact.html`'s form was fully replaced with the 無料カウンセリングお申し込み /
+  Free Counseling Application form (full field list from the brief,
+  including real course names from `data/products.js`, DOB dropdowns,
+  conditional "other" text fields, a required courses-of-interest group,
+  privacy-consent checkbox, honeypot). Verified end-to-end against a live
+  Netlify deploy: a test submission was captured with every field intact.
+  Netlify Forms was previously disabled site-wide
+  (`processing_settings.html.ignore_html_forms: true`) and had no
+  submission-notification hook configured at all; both were fixed this
+  round (form detection enabled, an email notification to
+  info.pec.jp@gmail.com was added) — see the session report for details.
+- All em/en-dashes removed from every rendered page (code comments
+  excepted). The one legal-page edit: `sct.html`'s
+  "[to be confirmed — ...]" → "[to be confirmed: ...]" (punctuation only).
+- Title audit: shortened several titles to fit one line at 390px (FAQ,
+  Pricing, Services, 404, and the 5 pages that used the generic
+  "[Placeholder page title]"). Two documented exceptions still wrap at
+  390px because their exact wording was specified by the brief and can't
+  be shortened: `sct.html`'s legal-act title and `contact.html`'s "Free
+  Counseling Application" title (both got a smaller mobile-only font size
+  instead, down to 2–3 clean lines).
 
 ## 1. Placeholder content to replace
 

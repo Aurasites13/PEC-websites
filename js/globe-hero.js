@@ -227,7 +227,6 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     var rect = wrapEl.getBoundingClientRect();
     var total = rect.height - window.innerHeight;
     targetProgress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
-    if (targetProgress > 0.45) maybeLoadHiRes();
   }
 
   var scrollTicking = false;
@@ -361,30 +360,19 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   manager.onLoad = onReady;
   manager.onError = function () { activateFallback(); };
   var loader = new THREE.TextureLoader(manager);
-  var dayTex = loader.load("assets/textures/earth-day.jpg");
+  // Single high-resolution day map (native 5400x2700) loaded up front and
+  // used for the whole fly-through: swapping in a sharper texture mid-scroll
+  // (the previous behavior) left the globe visibly blurry from the first
+  // frame until the swap fired, and the swap itself caused a visible pop.
+  // The loading bar already gates first paint on this finishing, so there's
+  // no soft/blurry period to begin with.
+  var dayTex = loader.load("assets/textures/earth-day-hires.jpg");
   dayTex.colorSpace = THREE.SRGBColorSpace;
   dayTex.anisotropy = maxAnisotropy;
   var cloudTex = loader.load("assets/textures/earth-clouds.png");
   cloudTex.anisotropy = maxAnisotropy;
   globeMat.map = dayTex;
   cloudMat.map = cloudTex;
-
-  // Higher-resolution day map (native 5400x2700, needed for the close-in
-  // Japan zoom to read as sharp rather than upscaled/soft), fetched only
-  // once scrolling actually approaches that zoomed-in state — not eagerly
-  // on load — so visitors who never scroll past the fold never pay for it.
-  var hiResRequested = false;
-  function maybeLoadHiRes() {
-    if (hiResRequested) return;
-    hiResRequested = true;
-    new THREE.TextureLoader().load("assets/textures/earth-day-hires.jpg", function (hiResTex) {
-      hiResTex.colorSpace = THREE.SRGBColorSpace;
-      hiResTex.anisotropy = maxAnisotropy;
-      globeMat.map = hiResTex;
-      globeMat.needsUpdate = true;
-      dayTex.dispose();
-    });
-  }
 
   fallbackTimer = setTimeout(activateFallback, 9000);
 })();

@@ -51,11 +51,6 @@ function scopeCol(titleEn, titleJa, items, variant) {
       </div>`;
 }
 
-function eyebrowNum(p) {
-  const n = String(p.num).padStart(2, "0");
-  return L(`${n} — ${p.category}`, `${n} — ${p.categoryJa}`);
-}
-
 function priceTeaser(p) {
   if (p.priceIsFrom) {
     return L(`From ${p.priceFromEn}`, `${p.priceFromJa}〜`);
@@ -69,7 +64,7 @@ function priceTeaser(p) {
 
 function servicesCtaBlock(p) {
   return `<div class="product-cta">
-        <a href="contact.html" class="btn btn-accent">${L("Free Consultation", "無料相談はこちら")}</a>
+        <a href="contact.html" class="btn btn-accent">${L("Free Counseling", "無料カウンセリングはこちら")}</a>
         <a href="pricing.html#${p.id}" class="btn btn-outline">${L("View Pricing", "料金を見る")}</a>
       </div>`;
 }
@@ -77,7 +72,7 @@ function servicesCtaBlock(p) {
 function servicesTierSubcard(tier) {
   if (!tier.included) return "";
   return `<div class="tier-subcard">
-        <h4>${L(tier.nameEn, tier.nameJa)} — <span class="product-line-price">${esc(tier.price)}${L(" (tax incl.)", "（税込）")}</span></h4>
+        <h4>${L(tier.nameEn, tier.nameJa)}: <span class="product-line-price">${esc(tier.price)}${L(" (tax incl.)", "（税込）")}</span></h4>
         <span class="tier-consult">${Lp({ en: tier.consultationsEn, ja: tier.consultationsJa })}</span>
         ${scopeGrid([
           scopeCol("What's Included", "サービス内容", tier.included, "check"),
@@ -96,7 +91,6 @@ function servicesAreaBlock(area) {
 function buildServicesSection(p, idx) {
   const altClass = idx % 2 === 1 ? " alt" : "";
   const head = `<div class="section-head left reveal">
-      <span class="eyebrow">${eyebrowNum(p)}</span>
       <div class="product-line-head">
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <span class="product-line-price">${priceTeaser(p)}</span>
@@ -113,7 +107,7 @@ function buildServicesSection(p, idx) {
     body = `${servicesTierSubcard(basic)}
     ${servicesTierSubcard(advanced)}
     <p class="bundle-note">${L(
-      `Bundle both into ${premium.nameEn} (${premium.price}) or add Application Execution for the full ${diamond.nameEn} bundle (${diamond.price}) — see the Pricing page for bundle savings.`,
+      `Bundle both into ${premium.nameEn} (${premium.price}), or add Application Execution for the full ${diamond.nameEn} bundle (${diamond.price}). See the Pricing page for bundle savings.`,
       `${premium.nameJa}（${premium.price}）としてまとめてご契約いただくか、Application Executionを加えた${diamond.nameJa}（${diamond.price}）のフルバンドルも可能です。バンドル割引の詳細は料金ページをご覧ください。`
     )}</p>`;
   } else if (p.pricing.type === "annual") {
@@ -155,7 +149,7 @@ function buildServicesSection(p, idx) {
 
 function pricingCtaBlock() {
   return `<div class="product-cta">
-        <a href="contact.html" class="btn btn-accent">${L("Free Consultation", "無料相談はこちら")}</a>
+        <a href="contact.html" class="btn btn-accent">${L("Free Counseling", "無料カウンセリングはこちら")}</a>
       </div>`;
 }
 
@@ -193,7 +187,6 @@ function buildPricingFormatPackage(p, idx) {
   return `  <section id="${p.id}" class="tight${altClass}">
     <div class="container">
       <div class="section-head left reveal">
-        <span class="eyebrow">${eyebrowNum(p)}</span>
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <p>${L(p.summaryEn, p.summaryJa)}</p>
       </div>
@@ -212,7 +205,6 @@ function buildPricingMonthly(p, idx) {
   return `  <section id="${p.id}" class="tight${altClass}">
     <div class="container">
       <div class="section-head left reveal">
-        <span class="eyebrow">${eyebrowNum(p)}</span>
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <p>${L(p.summaryEn, p.summaryJa)}</p>
       </div>
@@ -220,7 +212,7 @@ function buildPricingMonthly(p, idx) {
         <div class="amount">${esc(pr.price)}<small>${L(pr.unitEn, pr.unitJa)}</small></div>
         <p>${L(pr.contractEn, pr.contractJa)}</p>
         <p class="format-footnote">${L(pr.noteEn, pr.noteJa)}</p>
-        <a href="contact.html" class="btn btn-accent btn-block">${L("Free Consultation", "無料相談はこちら")}</a>
+        <a href="contact.html" class="btn btn-accent btn-block">${L("Free Counseling", "無料カウンセリングはこちら")}</a>
       </div>
     </div>
   </section>`;
@@ -258,9 +250,9 @@ function buildPricingTiered(p, idx) {
   const savingsCells = tiers
     .map((t) => {
       const cls = t.id === "premium" ? ' class="tier-premium tier-savings"' : t.savings ? ' class="tier-savings"' : "";
-      if (!t.savings) return `<td${cls}>${L("—", "—")}</td>`;
+      if (!t.savings) return `<td${cls}>${L("None", "なし")}</td>`;
       return `<td${cls}>${L(
-        `Normally ${t.normalPrice} — save ${t.savings}`,
+        `Normally ${t.normalPrice}, save ${t.savings}`,
         `通常${t.normalPrice}から${t.savings} Bundle Discount`
       )}</td>`;
     })
@@ -269,7 +261,6 @@ function buildPricingTiered(p, idx) {
   return `  <section id="${p.id}" class="tight${altClass}">
     <div class="container">
       <div class="section-head left reveal">
-        <span class="eyebrow">${eyebrowNum(p)}</span>
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <p>${L(p.summaryEn, p.summaryJa)}</p>
       </div>
@@ -307,7 +298,6 @@ function buildPricingPackageAddons(p, idx) {
   return `  <section id="${p.id}" class="tight${altClass}">
     <div class="container">
       <div class="section-head left reveal">
-        <span class="eyebrow">${eyebrowNum(p)}</span>
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <p>${L(p.summaryEn, p.summaryJa)}</p>
       </div>
@@ -344,7 +334,6 @@ function buildPricingAnnual(p, idx) {
   return `  <section id="${p.id}" class="tight${altClass}">
     <div class="container">
       <div class="section-head left reveal">
-        <span class="eyebrow">${eyebrowNum(p)}</span>
         <h2>${L(p.nameEn, p.nameJa)}</h2>
         <p>${L(p.summaryEn, p.summaryJa)}</p>
       </div>
@@ -394,7 +383,6 @@ function buildPolicySection(idx) {
   return `  <section class="tight${altClass}">
     <div class="container">
       <div class="section-head reveal">
-        <span class="eyebrow">${L("Policies", "ご利用にあたって")}</span>
         <h2>${L("Fine print, made clear.", "わかりやすい注意事項。")}</h2>
         <p class="lead center">${Lp(POLICY.priceDisplay)}</p>
       </div>
