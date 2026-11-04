@@ -1,112 +1,220 @@
 # Pre-Launch Checklist — redesign-mmbh branch
 
-This round was structure and design, not final content. Nothing below is
-broken — it's a list of what still needs real content, a decision, or a
-follow-up pass before this branch (or its successor) goes live. Grouped by
-type; each item names the file/section so it's easy to find and edit.
+Updated after the second redesign pass (site menu rebuild, missing pages,
+unverified-claims sweep, contact-detail fix). Nothing below is broken — it's
+what still needs real content, a decision, or a follow-up before this branch
+goes live. Grouped by type; each item names the file/section.
 
 ## 1. Placeholder content to replace
 
 All of the below uses `[bracketed placeholder text]` in English and
-`［プレースホルダー］`-style text in Japanese, so a text search for `[` /
+`［プレースホルダー］`-style text in Japanese — a text search for `[` /
 `プレースホルダー` across the repo finds every instance.
 
 | Location | What's placeholder |
 |---|---|
 | `index.html` — Course Options section (`#courses`) | 4 course cards: names, one-line descriptions |
 | `index.html` — Q&A section (`#qa`) | 4 question/answer pairs |
+| `index.html` — hero lead, meta description, PEC Difference cards (×2) | target-clientele phrase, discretion claim, instructor-vetting claim, school-network claim (see §3) |
 | `course-detail-template.html` | Entire page: course name, tagline, 3 value points, 3 "who this is for" scenarios, 4 concept/strength blocks, price box, 3-step process |
-| `js/main.js` → media drawer (`initFloatingChrome`) | 6 "Logo placeholder" tiles, the whole Media & Appearances panel — no real press/TV/talk-show coverage has been added, intentionally |
-| `testimonials.html` | Already noindexed with a "coming soon" placeholder from a prior round — still applies, untouched by this redesign |
+| `testimonials.html` | 3 testimonial cards: `[Placeholder testimonial]` / `[Student Name]` / `[Course]` — no "coming soon" wording per this round's instruction |
+| `results.html` (new) | 6 results cards: `[School or Exam]` / `[Result]` / `[Year]` |
+| `careers.html` (new) | Intro paragraph + 2 job cards: `[Job Title]` / `[Job Description]` / `[Requirements]` |
+| `lessons.html` (new, "About Our Lessons") | Entire page: 3 topic cards + 1 section |
+| `about.html` ("Company" in nav) | Hero title, founder's note, pull-quote, "Our Philosophy" section + 3 cards — see §3. "How We Work" 4-step process was left as real content (a process description, not a credibility claim) |
+| Footer tagline (every page) | "[Placeholder: who PEC serves]" — replaces the "most discerning families" claim |
 
 Real content exists and was **not** touched or deleted:
-- `data/products.js` — the actual 7-product catalogue and pricing. Still
-  the source of truth for `services.html` / `pricing.html`, which this
-  redesign did not restructure (only re-themed colors/fonts/header).
-  Nothing from here was pulled into the new homepage Course Options
-  section on purpose — that section is intentionally generic/placeholder
-  per the brief ("not final content" this round).
+- `data/products.js` — the actual 7-product catalogue and pricing, still
+  the source of truth for `services.html` / `pricing.html`. Nothing from
+  here was pulled into the homepage's placeholder Course Options section
+  on purpose.
 
-## 2. Font pairing decision
+## 2. The media/press side-toggle from the last round was removed
+
+The previous pass misread "side toggle" as a dedicated media/press panel.
+This round removed it completely — code, markup, CSS — and replaced it
+with the actual MMBH-style site menu (hamburger → slide-in nav). There is
+currently **no** media/press showcase anywhere on the site. If PEC wants
+one later (e.g. once real press coverage exists), it would need to be
+designed fresh — nothing from the removed component was reused.
+
+## 3. Claims replaced this round (confirm or reject each one)
+
+Every row below was a specific, confirmable-sounding claim with no source
+behind it. Replaced with a bracketed placeholder in EN and JA, everywhere
+it appeared (checked site-wide, not just the obvious spot).
+
+| Claim | Where it appeared | Replaced with |
+|---|---|---|
+| "...for Tokyo's most discerning families" | Footer tagline (all pages), `index.html` hero lead + meta description + og:description | `[Placeholder: who PEC serves]` / target-clientele placeholder |
+| "...confidentiality expected by **high-profile families**" | `index.html` — Complete Discretion card | `[Placeholder — specific discretion commitments not yet confirmed.]` |
+| "**Curated Instructors**" / "personally vetted for both academic rigour and rapport" | `index.html` — PEC Difference card | `[Placeholder]` heading + instructor-selection-process placeholder |
+| "**A Global Network**" / relationships with schools across Japan, Switzerland, the UK | `index.html` — PEC Difference card | `[Placeholder]` heading + relationships placeholder |
+| "...propose a bespoke programme **within 48 hours**" | `index.html` CTA band | response-time placeholder |
+| "We reply within **two business days**" / "Response time: within 2 business days" | `contact.html` (lead text + Details card), `js/main.js` (form success message) | response-time placeholder in all 4 spots |
+| Founder's note narrative ("years of watching brilliant students struggle...", specific operating claims) | `about.html` | `[Placeholder founder's note]` |
+| "Many of our families value privacy... we operate quietly, by referral and appointment" | `about.html` — Our Philosophy | `[Placeholder]` |
+| "Years of working directly with international schools and overseas admissions offices" | `about.html` — Our Philosophy | `[Placeholder]` |
+| "We look at the whole student..." (holistic-view claim) | `about.html` — Our Philosophy | `[Placeholder]` |
+
+**Not changed, and why:** the founder's first name ("Nanako") was treated
+as a real, previously-confirmed detail (it's also used in `sct.html`'s
+legal disclosure), not an invented claim — only the narrative claims
+*around* it were placeholdered. `about.html`'s "How We Work" 4-step
+process was left alone — it describes what PEC *will do* when engaged,
+not a claim about scale, credentials, or track record, so it didn't fit
+the pattern of the claims above.
+
+### Unverified language found in the legal pages (not changed — for lawyer/owner review)
+
+Per instruction, `privacy.html` / `terms.html` / `sct.html` were **not**
+edited for claims (only their contact-info strings — see §4). Flagging
+what a lawyer should look at:
+- `terms.html` / `privacy.html` / `sct.html` footer taglines **were**
+  swept along with every other page's shared footer ("most discerning
+  families" → placeholder) since that's shared site chrome, not legal
+  text — worth confirming this was acceptable.
+- `sct.html`'s Seller/Representative fields still read "Private Education
+  Concierge (PEC) [to be confirmed — sole proprietorship or registered
+  entity name]" and "Nanako [full legal name to be added]" — these were
+  already marked incomplete before this round and remain so; flagging
+  again since SCT disclosure requires accurate legal-entity info before
+  launch.
+- No other promotional claims (discretion, vetting, response times, etc.)
+  were found inside the three legal pages' substantive text — they're
+  procedural/legal documents, not marketing copy.
+
+## 4. Contact details
+
+- **Email**: `hello@pecjapan.com` replaced with `info.pec.jp@gmail.com`
+  everywhere it appeared, including `privacy.html` / `terms.html` /
+  `sct.html` (treated as a factual correction, not a "claims" edit — see
+  note below).
+- **WhatsApp**: removed completely — footer links (all pages) and the two
+  large CTA buttons (`index.html`, `contact.html`) deleted, not just
+  hidden. No WhatsApp number appears anywhere in the repo anymore.
+- **LINE**: removed from rendering the same way (footer links + the two
+  CTA buttons) — the LINE handle (`~pecjapan`) was never confirmed real,
+  so per "hide until confirmed" it's been taken out of the rendered pages
+  rather than just visually hidden. It's fully deleted from the HTML, not
+  commented out — restoring it means re-adding the markup once there's a
+  real LINE account to link.
+- `contact.html`'s "Prefer to message us directly?" card (which had no
+  buttons left after LINE/WhatsApp were removed) was rewritten to point
+  at the email address instead, so it isn't an empty card.
+- **Judgment call on legal pages**: item 3 of the brief says "Do not
+  change the legal pages," stated specifically in the context of
+  unverified claims. Item 4 (contact details) is a separate instruction
+  with no legal-page exception, and leaving a dead/wrong email in SCT or
+  privacy-policy contact fields seemed like the worse outcome, so the
+  email swap *was* applied inside the 3 legal pages. If this was meant to
+  be off-limits too, it's a one-string-per-file revert.
+
+### Contact form delivery — could not verify
+
+`contact.html`'s form uses Netlify Forms (`data-netlify="true"`,
+`name="contact"`). **Where form submissions get emailed is a Netlify
+dashboard setting (Site settings → Forms → Form notifications), not
+something in this repo's code** — there is no address hardcoded in the
+form that controls delivery. I cannot see or change that dashboard
+setting from here, so I cannot confirm submissions reach
+`info.pec.jp@gmail.com`. **Action needed:** check Site settings → Forms →
+Form notifications on the Netlify project and add/confirm an email
+notification to `info.pec.jp@gmail.com` if one isn't already set up.
+
+## 5. Font pairing decision
 
 `docs/font-preview.html` (noindex, unlinked) has 3 licensed pairings.
 **Fashion House** (Bodoni Moda + Manrope / Shippori Mincho + Noto Sans JP)
-is already live on the site via `--font-display`/`--font-body` variables
-in `css/style.css`. If a different pairing is preferred, see that file's
-own "how to switch" note — four variables plus the Google Fonts `<link>`
-in each page's `<head>`.
+is live via `--font-display`/`--font-body` variables in `css/style.css`.
 
-## 3. Headlines that needed shortening to fit one line
+## 6. Titles that don't fit on one line (suggested shorter versions — NOT applied without approval)
 
-The brief asked titles to stay on one line at desktop/tablet. Two
-homepage headlines wrapped with the new (wider) display font and were
-shortened:
-- "One concierge, every step of the way." → **"One concierge, every step."**
-- "Find the right fit, then see the details." → **"Find the right fit."**
+Checked every `h1`/`h2` on every page, both languages, at 1440px (desktop)
+via rendered line-count, not a guess. Placeholder-bracket titles (e.g.
+`[Placeholder page title]`) are excluded below since they'll be replaced
+anyway — only real copy is listed.
 
-**Not checked exhaustively**: the font change (Cormorant → Bodoni Moda)
-affects line-wrapping site-wide, and a full per-page, per-breakpoint
-headline audit of all 11 existing pages wasn't completed in this pass —
-only the homepage's new/edited sections were verified. One known example
-still wrapping and worth a look: `services.html`'s "Three disciplines.
-One coordinated programme." Recommend a quick visual pass over
-`about.html`, `services.html`, `pricing.html`, `faq.html`, `contact.html`
-headlines at 1440/768px before calling typography "done."
+| Page | Language | Current | Suggested shorter version |
+|---|---|---|---|
+| `index.html` hero | EN | "Every step of your child's education, considered." (3 lines in its 640px column) | "Every step, considered." |
+| `index.html` hero | JA | "お子様の学びの一歩一歩に、細やかな配慮を。" (3 lines) | "お子様の学びに、細やかな配慮を。" |
+| `index.html` "What PEC Is" | JA | "一人のコンシェルジュが、すべての道のりに。" (2 lines — EN "One concierge, every step." already fits) | "一人のコンシェルジュで、すべてを。" |
+| `index.html` Course Options | JA | "ぴったりのコースを見つけて、詳細へ。" (2 lines — EN already fits) | "ぴったりのコースを見つける。" |
+| `index.html` PEC Difference | JA | "教室ではなく、コンシェルジュという発想。" (2 lines — EN "A concierge, not a classroom." fits) | "教室ではなく、コンシェルジュ。" |
+| `index.html` Q&A | JA | "よくあるご質問にお答えします。" (2 lines — EN "Questions, answered." fits) | "よくあるご質問。" |
+| `services.html` hero | EN | "Three disciplines. One coordinated programme." (2 lines — also factually stale, it's 7 services now, not 3) | "Seven services, one programme." |
+| `services.html` hero | JA | "3つの専門領域を、一つのプログラムとして。" (2 lines, same staleness) | "7つのサービスを、一つのプログラムとして。" |
+| `contact.html` hero | JA | "まずは、お話をお聞かせください。" (2 lines — EN "Let's begin with a conversation." fits) | "まずはご相談から。" |
+| `about.html` "How We Work" | JA | "落ち着いた、一貫したプロセス。" (2 lines, kept as real content) | "一貫した、丁寧なプロセス。" |
+| `sct.html` hero (legal page) | EN | "Specified Commercial Transactions Act Disclosure" (2 lines) | Not suggesting a rewrite — legal page, needs lawyer sign-off on any wording change, not just a design one |
 
-## 4. SEO — must change before launch
+**Product-name headings that wrap but can't really be "shortened"** — these
+are real product names pulled from `data/products.js`, not marketing
+copy, so shortening the *wording* would mean renaming the product:
+- "International Education Advisory" / "海外進学・教育戦略"-type product
+  headings and "Swiss Post-Enrollment Concierge" / "スイス入学後・年間教
+  育コンシェルジュ" wrap to 2 lines on `services.html` and `pricing.html`
+  (inside the `.product-line-head` flex row, which is narrower than the
+  full column because it shares space with the price badge). **This is a
+  layout fix, not a wording fix** — widening that row or stacking the
+  price badge below the heading on narrower columns would resolve it
+  without touching any product name. Flagging as a design to-do rather
+  than a title to shorten.
 
-- **Open Graph image**: all pages currently reuse `logo-wordmark-hires.png`
-  (726×281) as `og:image`. That's a logo, not a proper 1200×630 social
-  preview image — works but looks thin on Facebook/LINE/X link previews.
-  Make a dedicated OG image before launch.
+**Not checked**: 390px and 768px title-wrapping specifically (only 1440px
+desktop was audited per the brief's "at its target size" — titles are
+allowed to wrap on mobile per the original brief's fluid-sizing rule, so
+this wasn't re-checked at smaller widths).
+
+## 7. SEO
+
+- **Open Graph image**: all pages reuse `logo-wordmark-hires.png`
+  (726×281) as `og:image` — a logo, not a proper 1200×630 social preview
+  image. Make a dedicated OG image before launch.
 - **hreflang — known limitation, not faked**: the site serves EN/JA from
-  the *same URL* via a client-side JS toggle (`data-lang-inline`), not
-  separate `/en/` and `/ja/` URLs. True `hreflang` alternates require
-  distinct URLs per language; adding `hreflang` tags that point both
-  languages at the same URL would be incorrect and is commonly ignored or
-  flagged by Google. I did **not** add hreflang tags for this reason —
-  added `og:locale` / `og:locale:alternate` instead, which is honest about
-  what actually exists. If bilingual SEO (being found in Japanese search
-  results specifically) matters for launch, the real fix is URL-based
-  language routing (e.g. `/ja/services.html` or `?lang=ja` with
-  server/redirect support), which is a bigger structural change than this
-  round covers — flagging it rather than guessing at a fix.
-- **Structured data**: only `index.html` got JSON-LD (`EducationalOrganization`
-  — name, url, logo, areaServed only; no fabricated ratings/reviews/prices,
-  per the brief). Add more (e.g. `Course` schema) once real course content
-  exists — don't add it against placeholder content.
-- **Canonical + Open Graph tags**: added to all 11 existing pages plus
-  `course-detail-template.html`, using each page's existing bilingual
-  `<title>`/`<meta description>` as the source (English variant used for
-  `og:title`/`og:description`, since OG doesn't support per-language
-  variants without separate URLs — see hreflang note above).
+  the *same URL* via a client-side toggle, not separate `/en/`/`/ja/`
+  URLs. Real `hreflang` alternates need distinct URLs per language;
+  tagging both languages onto the same URL would be incorrect and is
+  commonly ignored by Google. Used `og:locale`/`og:locale:alternate`
+  instead. If being found in Japanese search results specifically matters
+  for launch, the real fix is URL-based language routing — a bigger
+  structural change than either redesign round covered.
+- **Structured data**: only `index.html` has JSON-LD (`EducationalOrganization`
+  — name, url, logo, areaServed only; no fabricated ratings/reviews).
+- **Sitemap**: reduced to just `privacy.html` / `terms.html` / `sct.html`
+  — every other page is now noindexed (see §8), so including them in the
+  sitemap would contradict their own robots tag.
 
-## 5. Pages marked `noindex` (intentionally, until real content lands)
+## 8. Pages marked `noindex` (every page except the 3 legal pages)
 
-- `testimonials.html` — placeholder "coming soon," from a prior round.
-- `course-detail-template.html` — this round's new template page; every
-  course card on the homepage currently points here. Once real per-course
-  detail pages exist, either noindex gets removed per real page, or this
-  file stays as a permanent internal template (recommend keeping it
-  noindexed permanently either way, and not linking real course cards to
-  it once real pages exist).
-- `docs/font-preview.html`, `docs/mmbh-analysis.md`,
-  `docs/pre-launch-checklist.md` — internal working docs, not part of the
-  public site; not in `sitemap.xml`, not linked from site nav.
+Because the "most discerning families" placeholder lives in the shared
+footer on literally every page, and several pages have placeholder
+sections of their own, **all of these are noindexed**:
+`index.html`, `about.html`, `services.html`, `pricing.html`, `faq.html`,
+`contact.html`, `404.html`, `testimonials.html`, `course-detail-template.html`,
+`lessons.html`, `results.html`, `careers.html`.
 
-## 6. Design/content decisions this round made on PEC's behalf (confirm or revise)
+**Not noindexed** (unchanged, per "do not change the legal pages"):
+`privacy.html`, `terms.html`, `sct.html`.
 
-- Homepage's "remaining MMBH-flow section" (position 4) uses the existing
-  "The PEC Difference" cards rather than inventing a numbers-based proof
-  strip like MMBH's — because PEC has no real score/admission data to
-  show yet and the brief forbids inventing claims or statistics. Worth
-  revisiting once real outcomes exist.
-- The media/press side-toggle is a genuinely new component — MMBH itself
-  doesn't have a dedicated side-toggle for media appearances (see
-  `docs/mmbh-analysis.md`'s "Side toggle — what MMBH actually has"
-  section); this redesign built one using MMBH's drawer interaction
-  language, applied to a new purpose.
-- Course overview cards link to **one shared** `course-detail-template.html`
-  for now (all 4 cards point to the same file) rather than 4+ separate
-  pages, since none of the content is final yet — avoids building and then
-  immediately discarding several near-duplicate placeholder pages.
+`docs/font-preview.html`, `docs/mmbh-analysis.md`,
+`docs/pre-launch-checklist.md` are internal working docs — not part of
+the public site, not in `sitemap.xml`, not linked from site nav.
+
+## 9. Design/content decisions made on PEC's behalf this round (confirm or revise)
+
+- The site menu's "Courses" expandable item reveals 4 placeholder course
+  links, all pointing at the same `course-detail-template.html` (same
+  reasoning as the homepage's course cards — nothing to link to yet that
+  isn't the shared template).
+- "About Our Lessons" (`lessons.html`) and "Company" (`about.html`,
+  repurposed from the old "About" page) are two separate pages per the
+  MMBH-style menu structure, even though the old site only had one
+  combined "About" page. `about.html`'s URL/filename was kept as-is to
+  avoid breaking any existing links to it.
+- "What is PEC" in the menu links to `index.html#what-pec-is` (an anchor
+  on the homepage) rather than a standalone page, since the brief's
+  "create missing pages" list didn't name it and the homepage section
+  already covers that content.

@@ -39,25 +39,6 @@
       });
     });
 
-    // ---------- Mobile nav ----------
-    var toggle = document.querySelector(".nav-toggle");
-    var links = document.querySelector(".nav-links");
-    if (toggle && links) {
-      toggle.addEventListener("click", function () {
-        links.classList.toggle("open");
-        var expanded = links.classList.contains("open");
-        toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-        toggle.classList.toggle("open", expanded);
-      });
-      links.querySelectorAll("a").forEach(function (a) {
-        a.addEventListener("click", function () {
-          links.classList.remove("open");
-          toggle.setAttribute("aria-expanded", "false");
-          toggle.classList.remove("open");
-        });
-      });
-    }
-
     // ---------- FAQ / Q&A accordion ----------
     // Shared by faq.html's accordion and the homepage Q&A section (both use
     // the same .faq-item/.faq-q/.faq-a markup). Native <button> already
@@ -109,20 +90,144 @@
       revealEls.forEach(function (el) { el.classList.add("in"); });
     }
 
-    // ---------- Active nav link ----------
-    var path = window.location.pathname.split("/").pop() || "index.html";
-    document.querySelectorAll(".nav-links a").forEach(function (a) {
-      var href = a.getAttribute("href");
-      if (href === path) a.classList.add("active");
-    });
+    // ---------- Site menu (hamburger -> slide-in panel) ----------
+    // The menu's contents live in ONE place (PEC_MENU below) — every page
+    // gets the identical menu injected by this script, so there's nothing
+    // to keep in sync by hand across pages. Interaction pattern (rounded
+    // hamburger -> right-side slide-in panel, dark fill, expandable
+    // sub-item, closes via X/Esc/outside-click/link-click) follows MMBH's
+    // own site menu (see docs/mmbh-analysis.md); markup, copy, and code
+    // are PEC's own.
+    var PEC_MENU = [
+      { en: "TOP", ja: "TOP", href: "index.html" },
+      { en: "What is PEC", ja: "PECとは", href: "index.html#what-pec-is" },
+      {
+        en: "Courses", ja: "コース一覧", expandable: true,
+        children: [
+          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
+          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
+          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" },
+          { en: "[Course Name Placeholder]", ja: "［コース名プレースホルダー］", href: "course-detail-template.html" }
+        ]
+      },
+      { en: "About Our Lessons", ja: "授業について", href: "lessons.html" },
+      { en: "Student Testimonials", ja: "生徒の声", href: "testimonials.html" },
+      { en: "Results", ja: "合格実績", href: "results.html" },
+      { en: "Pricing", ja: "料金", href: "pricing.html" },
+      { en: "FAQ", ja: "よくある質問", href: "faq.html" },
+      { en: "Company", ja: "会社概要", href: "about.html" },
+      { en: "Careers", ja: "採用情報", href: "careers.html" },
+      { en: "Contact", ja: "お問い合わせ", href: "contact.html" }
+    ];
 
-    // ---------- Floating consultation sign + media side-toggle ----------
-    // Injected once here (not hand-copied into all 11 pages) so every page
-    // gets identical markup/behavior and there's one place to edit later.
-    // Pattern follows the MMBH analysis (docs/mmbh-analysis.md): a fixed
-    // element that stays pinned through scroll, right-edge vertical tab on
-    // desktop, bottom full-width bar on mobile.
-    (function initFloatingChrome() {
+    (function initSiteMenu() {
+      var navRight = document.querySelector(".nav-right");
+      if (!navRight) return;
+      var currentPath = (window.location.pathname.split("/").pop() || "index.html");
+
+      function linkHtml(item, extraClass) {
+        var hrefPath = item.href.split("#")[0];
+        var isActive = hrefPath === currentPath || (hrefPath === "index.html" && currentPath === "");
+        return '<a href="' + item.href + '" class="' + (extraClass || "") + (isActive ? " active" : "") + '">' +
+          '<span data-lang-inline="en">' + item.en + '</span>' +
+          '<span data-lang-inline="ja">' + item.ja + '</span>' +
+        '</a>';
+      }
+
+      var itemsHtml = PEC_MENU.map(function (item) {
+        if (item.expandable) {
+          var subHtml = item.children.map(function (child) {
+            return '<li>' + linkHtml(child, "site-menu-sublink") + '</li>';
+          }).join("");
+          return '<li class="site-menu-item has-children">' +
+            '<button type="button" class="site-menu-expand" aria-expanded="false">' +
+              '<span data-lang-inline="en">' + item.en + '</span>' +
+              '<span data-lang-inline="ja">' + item.ja + '</span>' +
+              '<svg class="site-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>' +
+            '</button>' +
+            '<ul class="site-menu-sublist">' + subHtml + '</ul>' +
+          '</li>';
+        }
+        return '<li class="site-menu-item">' + linkHtml(item, "site-menu-link") + '</li>';
+      }).join("");
+
+      var toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.id = "pecMenuToggle";
+      toggle.className = "site-menu-toggle";
+      toggle.setAttribute("aria-label", "Menu");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", "pecSiteMenu");
+      toggle.innerHTML = "<span></span><span></span><span></span>";
+      navRight.appendChild(toggle);
+
+      var menu = document.createElement("div");
+      menu.id = "pecSiteMenu";
+      menu.className = "site-menu";
+      menu.setAttribute("role", "dialog");
+      menu.setAttribute("aria-modal", "true");
+      menu.setAttribute("aria-label", "Site menu");
+      menu.innerHTML =
+        '<div class="site-menu-scrim" data-menu-close></div>' +
+        '<div class="site-menu-panel">' +
+          '<button type="button" class="site-menu-close" data-menu-close aria-label="Close menu">&times;</button>' +
+          '<ul class="site-menu-list">' + itemsHtml + '</ul>' +
+        '</div>';
+      document.body.appendChild(menu);
+
+      var panel = menu.querySelector(".site-menu-panel");
+
+      function openMenu() {
+        menu.classList.add("open");
+        toggle.classList.add("open");
+        toggle.setAttribute("aria-expanded", "true");
+        document.body.classList.add("menu-open");
+        menu.querySelector(".site-menu-close").focus();
+        document.addEventListener("keydown", onKeydown);
+      }
+      function closeMenu() {
+        menu.classList.remove("open");
+        toggle.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("menu-open");
+        toggle.focus();
+        document.removeEventListener("keydown", onKeydown);
+      }
+      function onKeydown(e) {
+        if (e.key === "Escape") closeMenu();
+      }
+      toggle.addEventListener("click", function () {
+        if (menu.classList.contains("open")) closeMenu(); else openMenu();
+      });
+      menu.querySelectorAll("[data-menu-close]").forEach(function (el) {
+        el.addEventListener("click", closeMenu);
+      });
+      // Click outside the panel (but still inside the open menu) closes it;
+      // the scrim already covers this, but guard clicks that land on the
+      // menu's own background too.
+      menu.addEventListener("click", function (e) {
+        if (!panel.contains(e.target)) closeMenu();
+      });
+      menu.querySelectorAll(".site-menu-link, .site-menu-sublink").forEach(function (a) {
+        a.addEventListener("click", closeMenu);
+      });
+      menu.querySelectorAll(".site-menu-expand").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var item = btn.closest(".site-menu-item");
+          var isOpen = item.classList.contains("expanded");
+          item.classList.toggle("expanded", !isOpen);
+          btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+        });
+      });
+    })();
+
+    // ---------- Floating consultation sign ----------
+    // Injected once here (not hand-copied into all pages) so every page
+    // gets identical markup/behavior. Pattern follows the MMBH analysis
+    // (docs/mmbh-analysis.md): a fixed element that stays pinned through
+    // scroll, right-edge vertical tab on desktop, bottom full-width bar
+    // on mobile.
+    (function initFloatingCta() {
       var cta = document.createElement("a");
       cta.id = "pecFloatCta";
       cta.href = "contact.html";
@@ -131,68 +236,6 @@
         '<span data-lang-inline="en">Free Consultation</span>' +
         '<span data-lang-inline="ja">無料相談</span>';
       document.body.appendChild(cta);
-
-      var toggle = document.createElement("button");
-      toggle.id = "pecMediaToggle";
-      toggle.type = "button";
-      toggle.className = "media-toggle";
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-controls", "pecMediaDrawer");
-      toggle.innerHTML =
-        '<span data-lang-inline="en">Media</span>' +
-        '<span data-lang-inline="ja">メディア</span>';
-      document.body.appendChild(toggle);
-
-      var drawer = document.createElement("div");
-      drawer.id = "pecMediaDrawer";
-      drawer.className = "media-drawer";
-      drawer.setAttribute("role", "dialog");
-      drawer.setAttribute("aria-modal", "true");
-      drawer.setAttribute("aria-labelledby", "pecMediaDrawerTitle");
-      drawer.innerHTML =
-        '<div class="media-drawer-scrim" data-media-close></div>' +
-        '<div class="media-drawer-panel">' +
-          '<button type="button" class="media-drawer-close" data-media-close aria-label="Close">&times;</button>' +
-          '<h3 id="pecMediaDrawerTitle">' +
-            '<span data-lang-inline="en">Media &amp; Appearances</span>' +
-            '<span data-lang-inline="ja">メディア掲載・出演情報</span>' +
-          '</h3>' +
-          '<p class="media-drawer-note">' +
-            '<span data-lang-inline="en">Placeholder section — no media appearances, press coverage, or logos have been added yet. This space is reserved for real coverage once confirmed.</span>' +
-            '<span data-lang-inline="ja">プレースホルダーです。メディア出演・掲載実績はまだ確定しておらず、確認が取れ次第こちらに掲載予定です。</span>' +
-          '</p>' +
-          '<div class="media-drawer-grid">' +
-            Array.from({ length: 6 }).map(function () {
-              return '<div class="media-placeholder-tile">' +
-                '<span data-lang-inline="en">Logo placeholder</span>' +
-                '<span data-lang-inline="ja">ロゴ・プレースホルダー</span>' +
-              '</div>';
-            }).join("") +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(drawer);
-
-      function openDrawer() {
-        drawer.classList.add("open");
-        toggle.setAttribute("aria-expanded", "true");
-        drawer.querySelector(".media-drawer-close").focus();
-        document.addEventListener("keydown", onKeydown);
-      }
-      function closeDrawer() {
-        drawer.classList.remove("open");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.focus();
-        document.removeEventListener("keydown", onKeydown);
-      }
-      function onKeydown(e) {
-        if (e.key === "Escape") closeDrawer();
-      }
-      toggle.addEventListener("click", function () {
-        if (drawer.classList.contains("open")) closeDrawer(); else openDrawer();
-      });
-      drawer.querySelectorAll("[data-media-close]").forEach(function (el) {
-        el.addEventListener("click", closeDrawer);
-      });
     })();
 
     // ---------- Footer year ----------
@@ -216,12 +259,12 @@
           var lang = document.documentElement.getAttribute("lang");
           if (ok) {
             status.textContent = lang === "ja"
-              ? "送信ありがとうございます。担当より2営業日以内にご連絡いたします。"
-              : "Thank you — we've received your message and will reply within 2 business days.";
+              ? "送信ありがとうございます。担当より［プレースホルダー：対応時間未確定］以内にご連絡いたします。"
+              : "Thank you — we've received your message and will reply within [placeholder — response time not yet confirmed].";
           } else {
             status.textContent = lang === "ja"
-              ? "送信中に問題が発生しました。LINEまたはWhatsAppからもご連絡いただけます。"
-              : "Something went wrong sending this. Please reach us via LINE or WhatsApp instead.";
+              ? "送信中に問題が発生しました。info.pec.jp@gmail.com までメールにてご連絡ください。"
+              : "Something went wrong sending this. Please email us at info.pec.jp@gmail.com instead.";
           }
           status.style.display = "block";
         }

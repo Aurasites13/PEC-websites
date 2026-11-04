@@ -45,11 +45,17 @@
   --shadow: 0 12px 32px -18px rgba(35,45,29,0.22);
   --transition: 220ms cubic-bezier(.4,0,.2,1);
 
-  --header-h: 96px; /* .site-header's actual rendered height — kept in sync manually */
+  --header-h: 85px; /* .site-header's actual rendered height — kept in sync manually */
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Anchor targets (nav links, course-card deep links) land below the sticky
+   header instead of partly hidden behind it. */
+[id] { scroll-margin-top: var(--header-h); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 body {
   margin: 0;
@@ -185,32 +191,17 @@ hr.rule {
   gap: 24px;
 }
 .brand img { height: 30px; width: auto; }
-.brand img.brand-wordmark { height: 48px; }
+/* aspect-ratio keeps the width/height HTML attributes (added for CLS)
+   from fighting the height-only CSS sizing below — without it, the
+   attribute values get used as raw pixel dimensions instead of an
+   intrinsic ratio, stretching the logo to the wrong width. */
+.brand img.brand-wordmark { height: 48px; aspect-ratio: 726 / 281; }
 .brand { display: flex; align-items: center; }
 @media (max-width: 640px) {
   .brand img.brand-wordmark { height: 38px; }
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 34px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.nav-links a {
-  font-size: 0.76rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: var(--ink-soft);
-  transition: color var(--transition);
-  white-space: nowrap;
-}
-.nav-links a:hover, .nav-links a.active { color: var(--accent); }
-
-.nav-right { display: flex; align-items: center; gap: 18px; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
 
 .lang-toggle {
   display: flex;
@@ -223,7 +214,10 @@ hr.rule {
 .lang-toggle button {
   background: transparent;
   border: none;
-  padding: 7px 12px;
+  /* Comfortable ~44px touch target at every width — the header no longer
+     has a competing horizontal nav to make room for, so this doesn't need
+     a mobile-only override anymore. */
+  padding: 13px 14px;
   cursor: pointer;
   font-family: var(--font-sans);
   color: var(--ink);
@@ -231,51 +225,127 @@ hr.rule {
 }
 .lang-toggle button.active { background: var(--ink); color: var(--bg); }
 
-.nav-toggle {
-  display: none;
+/* ---------- Site menu toggle (hamburger) ----------
+   Rounded-square, Blind Forest fill, three Tender White lines — same
+   control at every breakpoint (no separate desktop nav to fall back to),
+   matching MMBH's own hamburger-everywhere header. */
+.site-menu-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  background: var(--blind-forest);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.site-menu-toggle:hover { background: color-mix(in srgb, var(--blind-forest) 85%, var(--tender-white) 15%); }
+.site-menu-toggle:focus-visible { outline: 2px solid var(--berry-chocolate); outline-offset: 2px; }
+.site-menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: var(--tender-white);
+  transition: transform var(--transition), opacity var(--transition);
+}
+.site-menu-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.site-menu-toggle.open span:nth-child(2) { opacity: 0; }
+.site-menu-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ---------- Site menu panel ---------- */
+.site-menu { position: fixed; inset: 0; z-index: 200; display: none; }
+.site-menu.open { display: block; }
+.site-menu-scrim { position: absolute; inset: 0; background: rgba(35,45,29,0.5); }
+.site-menu-panel {
+  position: absolute;
+  top: 0; right: 0;
+  height: 100%;
+  width: min(460px, 86vw);
+  background: var(--blind-forest);
+  color: var(--tender-white);
+  padding: 90px 44px 48px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 320ms ease;
+}
+.site-menu.open .site-menu-panel { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .site-menu-panel { transition: none; }
+}
+.site-menu-close {
+  position: absolute;
+  top: 28px; right: 32px;
   background: none;
   border: none;
+  color: var(--tender-white);
+  font-size: 2rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px 8px;
 }
-.nav-toggle span {
-  display: block;
-  width: 24px;
-  height: 1.5px;
-  background: var(--ink);
-  margin: 5px 0;
-  transition: var(--transition);
-}
-/* Morphs into an X while the mobile menu is open, so the control visibly
-   affords "tap again to close" instead of staying a static hamburger. */
-.nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-.nav-toggle.open span:nth-child(2) { opacity: 0; }
-.nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.site-menu-close:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
 
-@media (max-width: 920px) {
-  .nav-links {
-    position: fixed;
-    inset: var(--header-h) 0 0 0;
-    background: var(--bg);
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 40px 32px;
-    gap: 26px;
-    transform: translateX(100%);
-    transition: transform var(--transition);
-    overflow-y: auto;
-  }
-  .nav-links.open { transform: translateX(0); }
-  .nav-links a { font-size: 1rem; }
-  .nav-toggle { display: block; }
-  /* Below the ~44px touch-target minimum at the compact desktop size. */
-  .lang-toggle button { padding: 13px 14px; }
-  /* The taller touch target above makes .site-header itself ~3.5px taller
-     on mobile than the desktop value baked into --header-h (used to size
-     the hero and offset the mobile nav panel) — override it here so both
-     stay pixel-accurate instead of drifting out of sync again. */
-  :root { --header-h: 84.5px; }
+.site-menu-list { list-style: none; margin: 0; padding: 0; }
+.site-menu-item { border-bottom: 1px solid rgba(244,244,241,0.14); }
+.site-menu-item:first-child { border-top: 1px solid rgba(244,244,241,0.14); }
+.site-menu-link {
+  display: block;
+  padding: 18px 2px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--tender-white);
+  letter-spacing: 0.01em;
+}
+.site-menu-link:hover, .site-menu-link.active { color: var(--relax-yellow); }
+.site-menu-link:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+
+.site-menu-expand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 18px 2px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--tender-white);
+  cursor: pointer;
+  text-align: left;
+}
+.site-menu-expand:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+.site-menu-chevron { width: 20px; height: 20px; transition: transform var(--transition); flex-shrink: 0; }
+.site-menu-item.expanded .site-menu-chevron { transform: rotate(180deg); }
+
+.site-menu-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 14px 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition);
+}
+.site-menu-item.expanded .site-menu-sublist { max-height: 400px; }
+.site-menu-sublink {
+  display: block;
+  padding: 10px 2px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: #D9D4C4;
+}
+.site-menu-sublink:hover, .site-menu-sublink.active { color: var(--relax-yellow); }
+.site-menu-sublink:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+
+body.menu-open { overflow: hidden; }
+
+@media (max-width: 480px) {
+  /* Stay short of 100vw even on the smallest phones — a visible sliver of
+     the page behind the panel is the MMBH pattern this is based on. */
+  .site-menu-panel { padding: 84px 28px 40px; width: 90vw; }
 }
 
 /* ---------- Hero: 3D globe fly-through ---------- */
@@ -348,6 +418,8 @@ hr.rule {
 .hero3d-wordmark-mark {
   display: block;
   width: 100%;
+  height: auto;
+  aspect-ratio: 726 / 228;
   /* Logo asset is ink-colored; no invert needed now the globe sits on a
      light background (it was flipped to white for the old dark-navy hero). */
 }
@@ -890,8 +962,13 @@ section.alt .bundle-note { color: var(--ink-soft); }
   gap: 40px;
   margin-bottom: 40px;
 }
-.footer-grid img { height: 26px; margin-bottom: 14px; }
-.footer-grid h4 {
+/* width:auto is explicit (not left implicit) because the HTML width/height
+   attributes on this img (added for CLS) otherwise act as a UA-stylesheet
+   width default of their own, which wins over aspect-ratio and then gets
+   capped by max-width:100% to the column width instead of scaling with
+   height. */
+.footer-grid img { height: 26px; width: auto; aspect-ratio: 726 / 281; margin-bottom: 14px; }
+.footer-grid h3 {
   font-family: var(--font-sans);
   font-size: 0.76rem;
   letter-spacing: 0.14em;
@@ -999,12 +1076,9 @@ html:not([lang="ja"]) [data-lang-block="en"] { display: block; }
 }
 
 /* ==========================================================================
-   Floating consultation sign + media side-toggle
-   Injected into every page by js/main.js (initFloatingChrome) — see that
-   file for the markup. Desktop: right-edge vertical tab (CTA) + left-edge
-   vertical tab (media). Mobile: CTA becomes a bottom bar; media toggle
-   stays a small left-edge tab, parked above the CTA bar so neither covers
-   the other or any page controls.
+   Floating consultation sign
+   Injected into every page by js/main.js (initFloatingCta) — see that file
+   for the markup. Desktop: right-edge vertical tab. Mobile: bottom bar.
    ========================================================================== */
 .float-cta {
   position: fixed;
@@ -1033,95 +1107,6 @@ html:not([lang="ja"]) [data-lang-block="en"] { display: block; }
 }
 .float-cta:focus-visible { outline: 2px solid var(--berry-chocolate); outline-offset: 2px; }
 
-.media-toggle {
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 89;
-  background: var(--blind-forest);
-  color: var(--tender-white);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  padding: 20px 10px;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  border-radius: 0 8px 8px 0;
-  box-shadow: var(--shadow);
-}
-.media-toggle:hover,
-.media-toggle:focus-visible {
-  background: color-mix(in srgb, var(--blind-forest) 85%, var(--tender-white) 15%);
-}
-.media-toggle:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
-
-.media-drawer { position: fixed; inset: 0; z-index: 200; display: none; }
-.media-drawer.open { display: block; }
-.media-drawer-scrim {
-  position: absolute; inset: 0;
-  background: rgba(35,45,29,0.5);
-}
-.media-drawer-panel {
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-  width: min(420px, 88vw);
-  background: var(--blind-forest);
-  color: var(--tender-white);
-  padding: 72px 34px 40px;
-  overflow-y: auto;
-  transform: translateX(-100%);
-  transition: transform 320ms ease;
-}
-.media-drawer.open .media-drawer-panel { transform: translateX(0); }
-@media (prefers-reduced-motion: reduce) {
-  .media-drawer-panel { transition: none; }
-}
-.media-drawer-panel h3 {
-  color: var(--tender-white);
-  font-size: 1.3rem;
-  margin-bottom: 14px;
-}
-.media-drawer-note {
-  font-size: 0.86rem;
-  color: #D9D4C4;
-  border: 1px dashed rgba(244,244,241,0.35);
-  border-radius: 4px;
-  padding: 14px 16px;
-  margin-bottom: 28px;
-}
-.media-drawer-close {
-  position: absolute;
-  top: 24px; right: 28px;
-  background: none;
-  border: none;
-  color: var(--tender-white);
-  font-size: 1.8rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.media-drawer-close:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
-.media-drawer-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-.media-placeholder-tile {
-  border: 1px dashed rgba(244,244,241,0.35);
-  border-radius: 4px;
-  padding: 22px 10px;
-  text-align: center;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: #BDB9AC;
-}
-
 @media (max-width: 760px) {
   .float-cta {
     top: auto;
@@ -1137,12 +1122,4 @@ html:not([lang="ja"]) [data-lang-block="en"] { display: block; }
     font-size: 0.86rem;
   }
   .float-cta:hover, .float-cta:focus-visible { padding-right: 20px; }
-  .media-toggle {
-    top: auto;
-    bottom: 76px;
-    transform: none;
-    padding: 14px 8px;
-    font-size: 0.64rem;
-  }
-  .media-drawer-panel { padding: 64px 24px 100px; }
 }

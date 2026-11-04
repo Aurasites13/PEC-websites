@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Every other page is currently noindexed (placeholder or unverified
+     content — see docs/pre-launch-checklist.md); only the untouched legal
+     pages are listed here until that changes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://pecjapan.com/</loc></url>
-  <url><loc>https://pecjapan.com/about.html</loc></url>
-  <url><loc>https://pecjapan.com/services.html</loc></url>
-  <url><loc>https://pecjapan.com/pricing.html</loc></url>
-  <url><loc>https://pecjapan.com/faq.html</loc></url>
-  <url><loc>https://pecjapan.com/contact.html</loc></url>
   <url><loc>https://pecjapan.com/privacy.html</loc></url>
   <url><loc>https://pecjapan.com/terms.html</loc></url>
   <url><loc>https://pecjapan.com/sct.html</loc></url>
