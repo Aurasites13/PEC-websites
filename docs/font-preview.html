@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEC — Font Pairing Preview (internal, not for publication)</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&family=Zen+Old+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Manrope:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=Public+Sans:wght@300;400;500;600&family=Shippori+Mincho+B1:wght@500;600&family=Zen+Maru+Gothic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --berry-chocolate: #3A050F;
+    --blind-forest: #232D1D;
+    --powdered-cocoa: #2D1A05;
+    --relax-yellow: #F4E295;
+    --tender-white: #F4F4F1;
+    --linen: #E8E3CF;
+    --ink-soft: #5A5048;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--tender-white);
+    color: var(--berry-chocolate);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    padding: 0 0 120px;
+  }
+  .intro {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 40px;
+  }
+  .intro h1 { font-size: 1.9rem; margin-bottom: 0.4em; }
+  .intro p { color: var(--ink-soft); font-size: 1.02rem; }
+  .intro .note {
+    background: var(--linen);
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+  .pairing {
+    max-width: 980px;
+    margin: 0 auto 72px;
+    padding: 0 32px;
+  }
+  .pairing-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 2px solid var(--berry-chocolate);
+    padding-bottom: 14px;
+    margin-bottom: 28px;
+  }
+  .pairing-head h2 { margin: 0; font-size: 1.3rem; }
+  .pairing-head .tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .pairing.recommended .pairing-head { border-bottom-color: var(--relax-yellow); border-bottom-width: 4px; }
+  .pairing.recommended .pairing-head h2::after {
+    content: "RECOMMENDED";
+    display: inline-block;
+    margin-left: 12px;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    background: var(--berry-chocolate);
+    color: var(--tender-white);
+    padding: 4px 10px;
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+  .sample-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 760px) { .sample-grid { grid-template-columns: 1fr; } }
+  .sample-col { background: #fff; border: 1px solid var(--linen); border-radius: 4px; padding: 28px 26px; }
+  .sample-col .lang-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .headline { font-size: 2.1rem; line-height: 1.12; margin: 0 0 18px; font-weight: 600; }
+  .subhead { font-size: 1.05rem; margin: 0 0 14px; font-weight: 500; color: var(--powdered-cocoa); }
+  .body-copy { font-size: 0.96rem; color: var(--ink-soft); margin: 0; }
+  .font-stack-label {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--linen);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* --- Pairing 1: Soft Editorial --- */
+  .p1-headline { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+  .p1-headline-ja { font-family: 'Zen Old Mincho', serif; }
+  .p1-body { font-family: 'Inter', sans-serif; }
+  .p1-body-ja { font-family: 'Zen Kaku Gothic New', sans-serif; }
+
+  /* --- Pairing 2: Fashion House (recommended) --- */
+  .p2-headline { font-family: 'Bodoni Moda', serif; font-optical-sizing: auto; }
+  .p2-headline-ja { font-family: 'Shippori Mincho', serif; }
+  .p2-body { font-family: 'Manrope', sans-serif; }
+  .p2-body-ja { font-family: 'Noto Sans JP', sans-serif; }
+
+  /* --- Pairing 3: Quiet Luxury --- */
+  .p3-headline { font-family: 'Spectral', serif; }
+  .p3-headline-ja { font-family: 'Shippori Mincho B1', serif; }
+  .p3-body { font-family: 'Public Sans', sans-serif; }
+  .p3-body-ja { font-family: 'Zen Maru Gothic', sans-serif; }
+
+  .verdict {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .verdict .box {
+    background: var(--berry-chocolate);
+    color: var(--tender-white);
+    border-radius: 4px;
+    padding: 32px 30px;
+  }
+  .verdict .box h2 { margin-top: 0; font-size: 1.2rem; color: var(--relax-yellow); }
+  .verdict .box p { color: #E9D9D3; font-size: 0.94rem; }
+  .swap-note {
+    max-width: 820px;
+    margin: 32px auto 0;
+    padding: 0 32px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  code { background: var(--linen); padding: 2px 6px; border-radius: 3px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>PEC — Font Pairing Preview</h1>
+  <p>Internal working page, not part of the public site (noindex, unlinked). Three licensed Google Fonts pairings — each one EN headline + EN body + JP headline + JP body — evaluated against the brief: European, elegant, modern, easy to read, and a &ldquo;touch of Ralph Lauren.&rdquo; All fonts below are open-licensed (SIL OFL / Apache), free for commercial web use.</p>
+  <div class="note">The live site currently implements <strong>Pairing 2 — Fashion House</strong>, set via <code>--font-display</code> / <code>--font-body</code> / <code>--font-display-ja</code> / <code>--font-body-ja</code> in <code>css/style.css</code>. Swapping the whole site to a different pairing from this page means changing those four variables' values (and the Google Fonts <code>&lt;link&gt;</code> in every page's <code>&lt;head&gt;</code> to only load the fonts actually used) — see the note at the bottom of this page.</div>
+</div>
+
+<div class="pairing">
+  <div class="pairing-head">
+    <h2>Pairing 1 — Soft Editorial</h2>
+    <span class="tag">Fraunces + Inter / Zen Old Mincho + Zen Kaku Gothic New</span>
+  </div>
+  <div class="sample-grid">
+    <div class="sample-col">
+      <div class="lang-label">English</div>
+      <p class="headline p1-headline">Every step, considered.</p>
+      <p class="subhead p1-body">A boutique concierge for Tokyo&rsquo;s most discerning families.</p>
+      <p class="body-copy p1-body">Private tutoring, exam preparation, and study-abroad guidance, coordinated with complete discretion from a single point of contact. [Placeholder copy — not final.]</p>
+      <div class="font-stack-label">Fraunces (headline) · Inter (body)</div>
+    </div>
+    <div class="sample-col">
+      <div class="lang-label">日本語</div>
+      <p class="headline p1-headline-ja">一歩ずつ、丁寧に。</p>
+      <p class="subhead p1-body-ja">東京の上質なご家庭のための、ブティック型教育コンシェルジュ。</p>
+      <p class="body-copy p1-body-ja">個別指導、試験対策、留学サポートを、専任の窓口が一貫してコーディネートいたします。［プレースホルダーテキスト・未確定］</p>
+      <div class="font-stack-label">Zen Old Mincho（見出し）・ Zen Kaku Gothic New（本文）</div>
+    </div>
+  </div>
+</div>
+
+<div class="pairing recommended">
+  <div class="pairing-head">
+    <h2>Pairing 2 — Fashion House</h2>
+    <span class="tag">Bodoni Moda + Manrope / Shippori Mincho + Noto Sans JP</span>
+  </div>
+  <div class="sample-grid">
+    <div class="sample-col">
+      <div class="lang-label">English</div>
+      <p class="headline p2-headline">Every step, considered.</p>
+      <p class="subhead p2-body">A boutique concierge for Tokyo&rsquo;s most discerning families.</p>
+      <p class="body-copy p2-body">Private tutoring, exam preparation, and study-abroad guidance, coordinated with complete discretion from a single point of contact. [Placeholder copy — not final.]</p>
+      <div class="font-stack-label">Bodoni Moda (headline) · Manrope (body)</div>
+    </div>
+    <div class="sample-col">
+      <div class="lang-label">日本語</div>
+      <p class="headline p2-headline-ja">一歩ずつ、丁寧に。</p>
+      <p class="subhead p2-body-ja">東京の上質なご家庭のための、ブティック型教育コンシェルジュ。</p>
+      <p class="body-copy p2-body-ja">個別指導、試験対策、留学サポートを、専任の窓口が一貫してコーディネートいたします。［プレースホルダーテキスト・未確定］</p>
+      <div class="font-stack-label">Shippori Mincho（見出し）・ Noto Sans JP（本文）</div>
+    </div>
+  </div>
+</div>
+
+<div class="pairing">
+  <div class="pairing-head">
+    <h2>Pairing 3 — Quiet Luxury</h2>
+    <span class="tag">Spectral + Public Sans / Shippori Mincho B1 + Zen Maru Gothic</span>
+  </div>
+  <div class="sample-grid">
+    <div class="sample-col">
+      <div class="lang-label">English</div>
+      <p class="headline p3-headline">Every step, considered.</p>
+      <p class="subhead p3-body">A boutique concierge for Tokyo&rsquo;s most discerning families.</p>
+      <p class="body-copy p3-body">Private tutoring, exam preparation, and study-abroad guidance, coordinated with complete discretion from a single point of contact. [Placeholder copy — not final.]</p>
+      <div class="font-stack-label">Spectral (headline) · Public Sans (body)</div>
+    </div>
+    <div class="sample-col">
+      <div class="lang-label">日本語</div>
+      <p class="headline p3-headline-ja">一歩ずつ、丁寧に。</p>
+      <p class="subhead p3-body-ja">東京の上質なご家庭のための、ブティック型教育コンシェルジュ。</p>
+      <p class="body-copy p3-body-ja">個別指導、試験対策、留学サポートを、専任の窓口が一貫してコーディネートいたします。［プレースホルダーテキスト・未確定］</p>
+      <div class="font-stack-label">Shippori Mincho B1（見出し）・ Zen Maru Gothic（本文）</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="box">
+    <h2>Recommendation: Pairing 2 — Fashion House</h2>
+    <p>Bodoni Moda's high-contrast, vertical-stress letterforms are the closest thing in web type to the "fashion-house serif" register the brief asked for — it's the same family of shape that reads as Vogue / fashion-editorial / Ralph Lauren-adjacent without copying any brand's actual wordmark. Manrope keeps body copy calm, geometric, and European rather than competing with the headline. Shippori Mincho carries the same quiet elegance into Japanese without tipping into traditional-formal (ceremony/calligraphy) territory, and Noto Sans JP keeps body text neutral and highly legible at small sizes, which matters more for JP body copy than character.</p>
+    <p>This is the pairing implemented across the live redesign. It's easy to switch — see below.</p>
+  </div>
+</div>
+
+<div class="swap-note">
+  <strong>To switch the whole site to a different pairing:</strong> in <code>css/style.css</code>, change the values of <code>--font-display</code>, <code>--font-display-ja</code>, <code>--font-body</code>, and <code>--font-body-ja</code> under <code>:root</code> to the chosen pairing's font names, then update the Google Fonts <code>&lt;link href="https://fonts.googleapis.com/css2?family=..."&gt;</code> in every page's <code>&lt;head&gt;</code> to request only those four families (to avoid loading unused font weights). No other code changes needed — every page reads type through those four variables.
+</div>
+
+</body>
+</html>
