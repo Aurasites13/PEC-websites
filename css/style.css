@@ -752,6 +752,39 @@ html:not(.js) .hero3d-text { opacity: 1; transform: none; }
   .diff-band p { margin-left: auto; margin-right: auto; }
 }
 
+/* ==========================================================================
+   Character illustrations: image beside its related text, alternating
+   sides, stacking (image above text) on mobile. No frame/card/shadow on
+   the image itself — mix-blend-mode: multiply drops its off-white backing
+   onto the section's own background (Tender White or Linen) so there's no
+   visible edge. Deliberately static (no float/parallax), unlike
+   .diff-illus, since these are editorial illustrations, not decorative
+   icons.
+   ========================================================================== */
+.illus-row {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin: 48px 0;
+}
+.illus-row.reverse { flex-direction: row-reverse; }
+.illus-media { flex: 0 0 38%; max-width: 420px; }
+.illus-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+.illus-copy { flex: 1 1 auto; min-width: 0; }
+@media (max-width: 760px) {
+  .illus-row, .illus-row.reverse { flex-direction: column; gap: 20px; }
+  .illus-media { flex: 0 0 auto; width: min(70vw, 320px); max-width: none; margin: 0 auto; }
+}
+/* Centered variant for symmetrical contexts (e.g. a CTA band) where a
+   left/right split would read oddly — image above text at every width. */
+.illus-row.stacked { flex-direction: column; gap: 20px; }
+.illus-row.stacked .illus-media { margin: 0 auto; }
+
 .breadcrumb {
   font-size: 0.8rem;
   color: var(--ink-soft);
@@ -1260,6 +1293,15 @@ section.alt .bundle-note { color: var(--ink-soft); }
 .page-header {
   padding: 64px 0 40px;
   text-align: center;
+}
+/* A page-header carrying an .illus-row reads left-aligned beside the
+   image instead of centered, matching the illustrated sections elsewhere
+   on the site (see .illus-row). */
+.page-header .illus-row { text-align: left; margin: 8px 0 0; }
+.page-header .illus-row .lead.center { margin-left: 0; margin-right: 0; }
+@media (max-width: 760px) {
+  .page-header .illus-row { text-align: center; }
+  .page-header .illus-row .lead.center { margin-left: auto; margin-right: auto; }
 }
 /* Long legal-act titles (e.g. sct.html's "Specified Commercial
    Transactions Act Disclosure") can't be shortened (legal pages take

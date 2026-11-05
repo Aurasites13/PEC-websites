@@ -28,6 +28,10 @@
       var val = lang === "ja" ? titleEl.getAttribute("data-ja") : titleEl.getAttribute("data-en");
       if (val) document.title = val;
     }
+    document.querySelectorAll("img[data-alt-en]").forEach(function (img) {
+      var altVal = lang === "ja" ? img.getAttribute("data-alt-ja") : img.getAttribute("data-alt-en");
+      if (altVal !== null) img.alt = altVal;
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -114,7 +118,6 @@
         ]
       },
       { en: "About Our Lessons", ja: "授業について", href: "lessons.html" },
-      { en: "Student Testimonials", ja: "生徒の声", href: "testimonials.html" },
       { en: "Results", ja: "合格実績", href: "results.html" },
       { en: "Pricing", ja: "料金", href: "pricing.html" },
       { en: "FAQ", ja: "よくある質問", href: "faq.html" },
