@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Every page is currently noindexed: the rest for placeholder/unverified
+     content (see docs/pre-launch-checklist.md), and privacy.html / terms.html
+     / sct.html as of this change because sct.html still contains
+     "[to be confirmed]" legal details pending lawyer review. Re-add the 3
+     legal pages here (and remove their noindex meta tag) once that review
+     is done. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://pecjapan.com/</loc></url>
-  <url><loc>https://pecjapan.com/about.html</loc></url>
-  <url><loc>https://pecjapan.com/services.html</loc></url>
-  <url><loc>https://pecjapan.com/pricing.html</loc></url>
-  <url><loc>https://pecjapan.com/faq.html</loc></url>
-  <url><loc>https://pecjapan.com/contact.html</loc></url>
-  <url><loc>https://pecjapan.com/privacy.html</loc></url>
-  <url><loc>https://pecjapan.com/terms.html</loc></url>
-  <url><loc>https://pecjapan.com/sct.html</loc></url>
 </urlset>

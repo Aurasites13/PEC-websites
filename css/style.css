@@ -1,35 +1,61 @@
 /* ==========================================================================
    PEC — Private Education Concierge
-   Design system: cream / charcoal / oxblood / soft gold
+   Design system (MMBH-informed redesign, redesign-mmbh branch)
+
+   Brand palette — the ONLY colors used anywhere on the site. No navy, gold,
+   or pure black: every other token below is a direct value or a CSS
+   color-mix() of these six.
    ========================================================================== */
 
 :root {
-  --bg: #FAF8F5;
-  --bg-alt: #F3EFE9;
-  --ink: #1C1B19;
-  --ink-soft: #4A4744;
-  --line: #E4DED4;
-  --accent: #6B2A3A;      /* oxblood / burgundy */
-  --accent-soft: #8C4353;
-  --gold: #B8A46E;
-  --card-bg: #FFFFFF;
-  --white: #FFFFFF;
+  /* ---- Brand palette (do not add colors outside this set) ---- */
+  --berry-chocolate: #3A050F;  /* primary brand color / main burgundy */
+  --blind-forest: #232D1D;     /* supporting — dark green-black */
+  --powdered-cocoa: #2D1A05;   /* supporting — dark warm brown */
+  --relax-yellow: #F4E295;     /* accent + free-consultation sign ONLY — never text on light bg */
+  --tender-white: #F4F4F1;     /* light background */
+  --linen: #E8E3CF;            /* alternate light background */
 
-  --font-serif: 'Cormorant Garamond', 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
-  --font-sans: 'Jost', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  /* ---- Semantic tokens (map to the palette above) ---- */
+  --bg: var(--tender-white);
+  --bg-alt: var(--linen);
+  --ink: var(--blind-forest);                /* headings, primary text */
+  --ink-soft: var(--powdered-cocoa);         /* body copy, secondary text */
+  --line: var(--linen);
+  --accent: var(--berry-chocolate);          /* links, eyebrows, icons, CTAs */
+  --accent-soft: color-mix(in srgb, var(--berry-chocolate) 80%, var(--powdered-cocoa));
+  --accent-hover: color-mix(in srgb, var(--berry-chocolate) 88%, black);
+  --card-bg: var(--linen);                   /* card fill on a --bg page */
+  --card-bg-on-dark: var(--tender-white);    /* card fill on a dark full-bleed section */
+  --white: var(--tender-white);              /* kept for legacy references; resolves to a palette color */
+
+  /* ---- Typography (see docs/font-preview.html for the 3 evaluated pairings) ---- */
+  --font-display: 'Fraunces', 'Zen Maru Gothic', serif;
+  --font-display-ja: 'Zen Maru Gothic', 'Fraunces', serif;
+  --font-body: 'Nunito', 'Zen Kaku Gothic New', sans-serif;
+  --font-body-ja: 'Zen Kaku Gothic New', 'Nunito', sans-serif;
+  /* Legacy aliases — most of the stylesheet below still reads these two;
+     keep them pointed at the display/body pair so nothing needs touching
+     twice when the pairing changes. */
+  --font-serif: var(--font-display), var(--font-display-ja);
+  --font-sans: var(--font-body), var(--font-body-ja);
 
   --maxw: 1180px;
   --radius: 2px;
-  --shadow: 0 12px 32px -18px rgba(28,27,25,0.28);
+  --shadow: 0 12px 32px -18px rgba(35,45,29,0.22);
   --transition: 220ms cubic-bezier(.4,0,.2,1);
 
-  --navy: #070D1A;
-  --navy-soft: #0E192B;
-  --header-h: 81px; /* .site-header's actual rendered height — kept in sync manually */
+  --header-h: 85px; /* .site-header's actual rendered height — kept in sync manually */
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Anchor targets (nav links, course-card deep links) land below the sticky
+   header instead of partly hidden behind it. */
+[id] { scroll-margin-top: var(--header-h); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 body {
   margin: 0;
@@ -38,7 +64,7 @@ body {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.7;
-  font-weight: 300;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -48,14 +74,27 @@ a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.15;
   margin: 0 0 0.5em;
   color: var(--ink);
 }
 
-h1 { font-size: clamp(2.6rem, 5vw, 4.4rem); font-weight: 600; }
-h2 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); }
+h1 { font-size: clamp(2.6rem, 5vw, 4.4rem); font-weight: 700; }
+@media (max-width: 480px) {
+  /* Titles are kept short enough to fit one line at this width (see
+     docs/pre-launch-checklist.md's title audit), but the display font's
+     default mobile minimum is still too large for some four/five-word
+     titles, so it steps down further below 480px specifically. */
+  h1 { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+}
+h2 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); font-weight: 700; }
+@media (max-width: 480px) {
+  /* Section titles are kept short, but the display font's default mobile
+     minimum is still too large for several four/five-word titles, so it
+     steps down further below 480px specifically (mirrors the h1 rule). */
+  h2 { font-size: clamp(1.1rem, 5.2vw, 1.8rem); }
+}
 h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); }
 
 p { margin: 0 0 1em; color: var(--ink-soft); }
@@ -64,17 +103,6 @@ p { margin: 0 0 1em; color: var(--ink-soft); }
   font-size: 1.15rem;
   color: var(--ink-soft);
   max-width: 640px;
-}
-
-.eyebrow {
-  display: inline-block;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 500;
-  margin-bottom: 1em;
 }
 
 .serif-italic { font-style: italic; font-weight: 400; }
@@ -156,38 +184,26 @@ hr.rule {
   border-bottom: 1px solid var(--line);
 }
 .nav-wrap {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 18px 32px;
+  max-width: none;
+  margin: 0;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
 }
 .brand img { height: 30px; width: auto; }
-.brand img.brand-monogram { height: 44px; }
+/* aspect-ratio keeps the width/height HTML attributes (added for CLS)
+   from fighting the height-only CSS sizing below — without it, the
+   attribute values get used as raw pixel dimensions instead of an
+   intrinsic ratio, stretching the logo to the wrong width. */
+.brand img.brand-wordmark { height: 48px; aspect-ratio: 726 / 281; }
 .brand { display: flex; align-items: center; }
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 34px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+@media (max-width: 640px) {
+  .brand img.brand-wordmark { height: 38px; }
 }
-.nav-links a {
-  font-size: 0.76rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: var(--ink-soft);
-  transition: color var(--transition);
-  white-space: nowrap;
-}
-.nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
-.nav-right { display: flex; align-items: center; gap: 18px; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
 
 .lang-toggle {
   display: flex;
@@ -200,7 +216,10 @@ hr.rule {
 .lang-toggle button {
   background: transparent;
   border: none;
-  padding: 7px 12px;
+  /* Comfortable ~44px touch target at every width — the header no longer
+     has a competing horizontal nav to make room for, so this doesn't need
+     a mobile-only override anymore. */
+  padding: 13px 14px;
   cursor: pointer;
   font-family: var(--font-sans);
   color: var(--ink);
@@ -208,51 +227,127 @@ hr.rule {
 }
 .lang-toggle button.active { background: var(--ink); color: var(--bg); }
 
-.nav-toggle {
-  display: none;
+/* ---------- Site menu toggle (hamburger) ----------
+   Rounded-square, Blind Forest fill, three Tender White lines — same
+   control at every breakpoint (no separate desktop nav to fall back to),
+   matching MMBH's own hamburger-everywhere header. */
+.site-menu-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  background: var(--blind-forest);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.site-menu-toggle:hover { background: color-mix(in srgb, var(--blind-forest) 85%, var(--tender-white) 15%); }
+.site-menu-toggle:focus-visible { outline: 2px solid var(--berry-chocolate); outline-offset: 2px; }
+.site-menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: var(--tender-white);
+  transition: transform var(--transition), opacity var(--transition);
+}
+.site-menu-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.site-menu-toggle.open span:nth-child(2) { opacity: 0; }
+.site-menu-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ---------- Site menu panel ---------- */
+.site-menu { position: fixed; inset: 0; z-index: 200; display: none; }
+.site-menu.open { display: block; }
+.site-menu-scrim { position: absolute; inset: 0; background: rgba(35,45,29,0.5); }
+.site-menu-panel {
+  position: absolute;
+  top: 0; right: 0;
+  height: 100%;
+  width: min(460px, 86vw);
+  background: var(--blind-forest);
+  color: var(--tender-white);
+  padding: 90px 44px 48px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 320ms ease;
+}
+.site-menu.open .site-menu-panel { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .site-menu-panel { transition: none; }
+}
+.site-menu-close {
+  position: absolute;
+  top: 28px; right: 32px;
   background: none;
   border: none;
+  color: var(--tender-white);
+  font-size: 2rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px 8px;
 }
-.nav-toggle span {
-  display: block;
-  width: 24px;
-  height: 1.5px;
-  background: var(--ink);
-  margin: 5px 0;
-  transition: var(--transition);
-}
-/* Morphs into an X while the mobile menu is open, so the control visibly
-   affords "tap again to close" instead of staying a static hamburger. */
-.nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-.nav-toggle.open span:nth-child(2) { opacity: 0; }
-.nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.site-menu-close:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: 2px; }
 
-@media (max-width: 920px) {
-  .nav-links {
-    position: fixed;
-    inset: var(--header-h) 0 0 0;
-    background: var(--bg);
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 40px 32px;
-    gap: 26px;
-    transform: translateX(100%);
-    transition: transform var(--transition);
-    overflow-y: auto;
-  }
-  .nav-links.open { transform: translateX(0); }
-  .nav-links a { font-size: 1rem; }
-  .nav-toggle { display: block; }
-  /* Below the ~44px touch-target minimum at the compact desktop size. */
-  .lang-toggle button { padding: 13px 14px; }
-  /* The taller touch target above makes .site-header itself ~3.5px taller
-     on mobile than the desktop value baked into --header-h (used to size
-     the hero and offset the mobile nav panel) — override it here so both
-     stay pixel-accurate instead of drifting out of sync again. */
-  :root { --header-h: 84.5px; }
+.site-menu-list { list-style: none; margin: 0; padding: 0; }
+.site-menu-item { border-bottom: 1px solid rgba(244,244,241,0.14); }
+.site-menu-item:first-child { border-top: 1px solid rgba(244,244,241,0.14); }
+.site-menu-link {
+  display: block;
+  padding: 18px 2px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--tender-white);
+  letter-spacing: 0.01em;
+}
+.site-menu-link:hover, .site-menu-link.active { color: var(--relax-yellow); }
+.site-menu-link:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+
+.site-menu-expand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 18px 2px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--tender-white);
+  cursor: pointer;
+  text-align: left;
+}
+.site-menu-expand:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+.site-menu-chevron { width: 20px; height: 20px; transition: transform var(--transition); flex-shrink: 0; }
+.site-menu-item.expanded .site-menu-chevron { transform: rotate(180deg); }
+
+.site-menu-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 14px 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition);
+}
+.site-menu-item.expanded .site-menu-sublist { max-height: 400px; }
+.site-menu-sublink {
+  display: block;
+  padding: 10px 2px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: #D9D4C4;
+}
+.site-menu-sublink:hover, .site-menu-sublink.active { color: var(--relax-yellow); }
+.site-menu-sublink:focus-visible { outline: 2px solid var(--relax-yellow); outline-offset: -2px; }
+
+body.menu-open { overflow: hidden; }
+
+@media (max-width: 480px) {
+  /* Stay short of 100vw even on the smallest phones — a visible sliver of
+     the page behind the panel is the MMBH pattern this is based on. */
+  .site-menu-panel { padding: 84px 28px 40px; width: 90vw; }
 }
 
 /* ---------- Hero: 3D globe fly-through ---------- */
@@ -274,7 +369,7 @@ hr.rule {
   overflow: hidden;
   display: flex;
   align-items: center;
-  background: radial-gradient(120% 120% at 50% 38%, var(--navy-soft) 0%, var(--navy) 70%);
+  background: radial-gradient(120% 120% at 50% 38%, var(--tender-white) 0%, var(--linen) 100%);
 }
 
 .hero3d-canvas {
@@ -290,8 +385,12 @@ hr.rule {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(7,13,26,0.72) 0%, rgba(7,13,26,0.28) 42%, rgba(7,13,26,0) 62%),
-              linear-gradient(0deg, rgba(7,13,26,0.55) 0%, rgba(7,13,26,0) 26%);
+  /* Light-theme equivalent of the old dark vignette: tints the globe near
+     the text column toward the page background instead of darkening it,
+     so hero3d-text stays legible without putting a dark edge on a white
+     page. Tender White (244,244,241) at the same opacities/stops as before. */
+  background: linear-gradient(90deg, rgba(244,244,241,0.85) 0%, rgba(244,244,241,0.38) 42%, rgba(244,244,241,0) 62%),
+              linear-gradient(0deg, rgba(244,244,241,0.6) 0%, rgba(244,244,241,0) 26%);
 }
 
 /* Branding moment shown at scroll 0, faded out by JS as the globe begins
@@ -321,15 +420,21 @@ hr.rule {
 .hero3d-wordmark-mark {
   display: block;
   width: 100%;
-  filter: invert(1);
+  height: auto;
+  aspect-ratio: 726 / 228;
+  /* The globe's visible Earth imagery (ocean/cloud/land) behind this mark
+     varies too much in brightness for the ink-colored asset to stay
+     readable, so it's forced to white with a soft shadow for separation. */
+  filter: brightness(0) invert(1) drop-shadow(0 2px 10px rgba(0,0,0,0.38));
 }
 .hero3d-wordmark-sub {
-  font-family: 'Cormorant', 'Cormorant Garamond', serif;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(0.72rem, 1.7vw, 0.92rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bg);
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 3px 14px rgba(0,0,0,0.3);
   white-space: nowrap;
 }
 @media (max-width: 640px) {
@@ -339,19 +444,26 @@ hr.rule {
 
 .hero3d-content { position: relative; z-index: 3; width: 100%; }
 
+/* Reveals as the camera arrives over Japan (see updateOverlay in
+   globe-hero.js). A solid-ish panel, not faded text straight over the
+   globe, since Earth imagery behind it varies too much in brightness/color
+   for plain dark text to stay reliably readable. */
 .hero3d-text {
-  max-width: 640px;
+  max-width: 540px;
   opacity: 0;
   transform: translateY(18px);
   will-change: opacity, transform;
+  background: rgba(244,244,241,0.94);
+  border-radius: 18px;
+  padding: 34px 40px;
+  box-shadow: 0 24px 60px -24px rgba(35,45,29,0.4);
 }
-.hero3d-text .eyebrow { color: var(--gold); }
-.hero3d-text h1 { color: var(--bg); }
-.hero3d-text .lead { color: rgba(250,248,245,0.82); }
-.hero3d-text .btn-primary { background: var(--gold); border-color: var(--gold); color: #1C1B19; }
-.hero3d-text .btn-primary:hover { background: #CDBB85; border-color: #CDBB85; }
-.hero3d-text .btn-outline { border-color: rgba(250,248,245,0.55); color: var(--bg); }
-.hero3d-text .btn-outline:hover { background: var(--bg); color: var(--navy); }
+.hero3d-text h2,
+.hero3d-text p { margin-bottom: 0; }
+.hero3d-text h2 { margin-bottom: 0.4em; font-size: clamp(1.3rem, 2.6vw, 1.9rem); }
+@media (max-width: 640px) {
+  .hero3d-text { padding: 24px 24px; max-width: 100%; }
+}
 
 .hero3d-cue {
   position: absolute;
@@ -367,15 +479,14 @@ hr.rule {
   font-weight: 500;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(250,248,245,0.92);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+  color: var(--ink-soft);
   transition: opacity 300ms ease;
 }
 .hero3d-cue i {
   display: block;
   width: 1px;
   height: 30px;
-  background: linear-gradient(var(--gold), rgba(201,173,110,0));
+  background: linear-gradient(var(--accent), rgba(58,5,15,0));
   animation: hero3d-cue-move 1.8s ease-in-out infinite;
 }
 @keyframes hero3d-cue-move {
@@ -392,20 +503,20 @@ hr.rule {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: var(--navy);
+  background: var(--bg);
   transition: opacity 500ms ease, visibility 0s 500ms;
 }
 .hero3d-loading.is-hidden { opacity: 0; visibility: hidden; }
 .hero3d-loading-mark {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.3rem;
   letter-spacing: 0.24em;
-  color: var(--gold);
+  color: var(--accent);
 }
 .hero3d-loading-track {
   width: 120px;
   height: 2px;
-  background: rgba(250,248,245,0.15);
+  background: rgba(58,5,15,0.12);
   overflow: hidden;
   border-radius: 2px;
 }
@@ -413,7 +524,7 @@ hr.rule {
   display: block;
   width: 40%;
   height: 100%;
-  background: var(--gold);
+  background: var(--accent);
   animation: hero3d-loading-sweep 1.15s ease-in-out infinite;
 }
 @keyframes hero3d-loading-sweep {
@@ -499,22 +610,155 @@ html:not(.js) .hero3d-text { opacity: 1; transform: none; }
 }
 .card .price-from strong { color: var(--ink); font-family: var(--font-serif); font-size: 1.1rem; letter-spacing: 0; }
 
-/* ---------- Pillars strip ---------- */
-.pillars {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
+/* ---------- Course options (homepage overview — airy, no pricing) ---------- */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
 }
-.pillar-chip {
+@media (max-width: 760px) { .course-grid { grid-template-columns: 1fr; } }
+.course-card {
+  display: block;
+  background: var(--card-bg);
   border: 1px solid var(--line);
-  background: var(--white);
-  padding: 10px 20px;
-  border-radius: 999px;
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  text-decoration: none;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.course-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.course-card h3 { margin-bottom: 10px; }
+.course-card p { margin-bottom: 20px; }
+.course-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--accent);
+}
+.course-card-cta .icon { width: 16px; height: 16px; }
+
+/* ==========================================================================
+   "More soul": bold full-bleed color sections, white rounded cards, and
+   original illustrations for Course Options + The PEC Difference.
+   ========================================================================== */
+.soul-section { color: var(--tender-white); }
+.soul-section.c-berry { background: var(--berry-chocolate); }
+.soul-section.c-forest { background: var(--blind-forest); }
+.soul-section.c-cocoa { background: var(--powdered-cocoa); }
+.soul-section.c-yellow { background: var(--relax-yellow); color: var(--berry-chocolate); }
+.soul-section .section-head h2 { color: inherit; }
+.soul-section .section-head p { color: inherit; opacity: 0.82; }
+
+.soul-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+@media (max-width: 1080px) { .soul-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .soul-grid { grid-template-columns: 1fr; } }
+
+.soul-card {
+  display: block;
+  background: var(--tender-white);
+  border-radius: 22px;
+  padding: 32px 26px;
+  text-decoration: none;
+  box-shadow: 0 18px 40px -20px rgba(0,0,0,0.35);
+  transition: transform 260ms cubic-bezier(.34,1.56,.64,1), box-shadow var(--transition);
+}
+.soul-card:hover { transform: translateY(-6px) rotate(-0.6deg); box-shadow: 0 26px 54px -20px rgba(0,0,0,0.4); }
+.soul-card .illus { display: block; width: 96px; height: 96px; margin-bottom: 16px; }
+.soul-card .illus svg { width: 100%; height: 100%; display: block; }
+.soul-card:hover .illus svg { animation: illus-wiggle 650ms ease; }
+.soul-card h3 { color: var(--berry-chocolate); font-size: 1.25rem; }
+.soul-bullets { list-style: none; margin: 14px 0 18px; padding: 0; }
+.soul-bullets li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 7px;
+  font-size: 0.9rem;
   color: var(--ink-soft);
 }
+.soul-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.55em;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--berry-chocolate);
+}
+.soul-price {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: var(--linen);
+  color: var(--berry-chocolate);
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+.soul-card .course-card-cta { display: flex; }
+
+@keyframes illus-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-4deg); }
+  60% { transform: rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .soul-card:hover { transform: none; }
+  .soul-card:hover .illus svg { animation: none; }
+}
+
+/* ---------- PEC Difference bands (zig-zag, one color per item) ---------- */
+.diff-band { padding: 64px 0; overflow: hidden; }
+.diff-band .container {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+.diff-band.reverse .container { flex-direction: row-reverse; }
+.diff-band.c-berry { background: var(--berry-chocolate); color: var(--tender-white); }
+.diff-band.c-forest { background: var(--blind-forest); color: var(--tender-white); }
+.diff-band.c-cocoa { background: var(--powdered-cocoa); color: var(--tender-white); }
+.diff-band.c-yellow { background: var(--relax-yellow); color: var(--berry-chocolate); }
+.diff-band h3, .diff-band p { color: inherit; }
+.diff-band p { opacity: 0.85; max-width: 480px; }
+.diff-illus { flex: 0 0 220px; width: 220px; display: block; }
+.diff-illus svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  animation: diff-float 4.5s ease-in-out infinite;
+}
+.diff-copy { flex: 1 1 auto; }
+@keyframes diff-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diff-illus svg { animation: none; }
+}
+@media (max-width: 760px) {
+  .diff-band .container, .diff-band.reverse .container {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+  .diff-illus { width: 170px; flex-basis: auto; }
+  .diff-band p { margin-left: auto; margin-right: auto; }
+}
+
+.breadcrumb {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.breadcrumb a { color: var(--accent); }
+.breadcrumb a:hover { text-decoration: underline; }
 
 /* ---------- Pricing ---------- */
 .pricing-card {
@@ -611,6 +855,11 @@ html:not(.js) .hero3d-text { opacity: 1; transform: none; }
   color: var(--ink-soft);
 }
 .product-line-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+/* Official product-line names (from data/products.js) can run long
+   ("Swiss Post-Enrollment Concierge"); sized down from the generic h2
+   scale so the longest name still fits one line at 390px instead of
+   wrapping to three, without shortening the verified name itself. */
+.product-line-head h2 { font-size: clamp(1.15rem, 3.6vw, 1.8rem); }
 .product-line-price {
   font-family: var(--font-serif);
   font-size: 1.1rem;
@@ -722,7 +971,7 @@ section.alt .bundle-note { color: var(--ink-soft); }
   padding: 34px 30px;
   border-radius: var(--radius);
 }
-.quote-card .mark { font-family: var(--font-serif); font-size: 2.6rem; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+.quote-card .mark { font-family: var(--font-serif); font-size: 2.6rem; color: var(--accent); line-height: 1; margin-bottom: 8px; }
 .quote-card p.quote { font-style: italic; color: var(--ink); font-size: 1.02rem; }
 .quote-meta { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
 .quote-meta .avatar {
@@ -734,6 +983,46 @@ section.alt .bundle-note { color: var(--ink-soft); }
 }
 .quote-meta .name { font-size: 0.85rem; font-weight: 500; }
 .quote-meta .result { font-size: 0.76rem; color: var(--accent); letter-spacing: 0.03em; }
+
+/* ---------- Q&amp;A (bold homepage redesign) ---------- */
+.qa-section { background: var(--relax-yellow); color: var(--berry-chocolate); }
+.qa-section .section-head h2 { color: inherit; }
+.qa-section .section-head p { color: inherit; opacity: 0.78; }
+.qa-cards { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.qa-cards .faq-item {
+  background: var(--tender-white);
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px -20px rgba(58,5,15,0.4);
+  transition: box-shadow var(--transition);
+}
+.qa-cards .faq-item:hover { box-shadow: 0 18px 36px -18px rgba(58,5,15,0.45); }
+.qa-cards .faq-q {
+  padding: 24px 28px;
+  gap: 20px;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--berry-chocolate);
+}
+.qa-cards .faq-q .plus {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--berry-chocolate);
+  color: var(--tender-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-left: 0;
+  transition: transform var(--transition), background var(--transition);
+}
+.qa-cards .faq-item.open .faq-q .plus { transform: rotate(135deg); background: var(--blind-forest); }
+.qa-cards .faq-a-inner { padding: 0 28px 26px; max-width: none; color: var(--ink-soft); }
 
 /* ---------- FAQ ---------- */
 .faq-item {
@@ -797,6 +1086,113 @@ section.alt .bundle-note { color: var(--ink-soft); }
 .form-field textarea { resize: vertical; min-height: 130px; }
 .form-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 14px; }
 
+/* ---------- Consultation form: paired fields, radio/checkbox pills,
+   section dividers, inline validation, consent ---------- */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 560px) { .form-row-2 { grid-template-columns: 1fr; gap: 0; } }
+
+.form-fieldset {
+  border: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.form-fieldset legend {
+  display: block;
+  width: 100%;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+  padding: 0;
+}
+.form-dob { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.radio-pills, .checkbox-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.radio-pill, .checkbox-pill {
+  position: relative;
+}
+.radio-pill input, .checkbox-pill input {
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
+}
+.radio-pill label, .checkbox-pill label {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.radio-pill input:checked + label,
+.checkbox-pill input:checked + label {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--tender-white);
+}
+.radio-pill input:focus-visible + label,
+.checkbox-pill input:focus-visible + label {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.form-other-field { margin-top: 10px; max-width: 320px; }
+.form-other-field[hidden] { display: none; }
+
+.form-section-divider {
+  margin: 36px 0 24px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.form-section-divider h3 { margin-bottom: 6px; }
+.form-section-divider .form-section-note { font-size: 0.86rem; color: var(--ink-soft); margin-bottom: 18px; }
+
+.form-error {
+  display: none;
+  font-size: 0.78rem;
+  color: var(--accent);
+  margin-top: 6px;
+}
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea,
+.form-fieldset.has-error .radio-pill label,
+.form-fieldset.has-error .checkbox-pill label { border-color: var(--accent); }
+.form-field.has-error .form-error,
+.form-fieldset.has-error .form-error { display: block; }
+
+.form-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 28px 0 20px;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+.form-consent input { margin-top: 4px; flex-shrink: 0; width: 18px; height: 18px; }
+.form-consent a { color: var(--accent); text-decoration: underline; }
+
+.form-status { margin-top: 16px; color: var(--accent); font-size: 0.92rem; }
+.form-success {
+  background: var(--relax-yellow);
+  color: var(--berry-chocolate);
+  border-radius: 12px;
+  padding: 20px 22px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
 .contact-methods {
   display: flex;
   gap: 14px;
@@ -828,8 +1224,13 @@ section.alt .bundle-note { color: var(--ink-soft); }
   gap: 40px;
   margin-bottom: 40px;
 }
-.footer-grid img { height: 26px; margin-bottom: 14px; }
-.footer-grid h4 {
+/* width:auto is explicit (not left implicit) because the HTML width/height
+   attributes on this img (added for CLS) otherwise act as a UA-stylesheet
+   width default of their own, which wins over aspect-ratio and then gets
+   capped by max-width:100% to the column width instead of scaling with
+   height. */
+.footer-grid img { height: 26px; width: auto; aspect-ratio: 726 / 281; margin-bottom: 14px; }
+.footer-grid h3 {
   font-family: var(--font-sans);
   font-size: 0.76rem;
   letter-spacing: 0.14em;
@@ -860,7 +1261,12 @@ section.alt .bundle-note { color: var(--ink-soft); }
   padding: 64px 0 40px;
   text-align: center;
 }
-.page-header .eyebrow { display: block; }
+/* Long legal-act titles (e.g. sct.html's "Specified Commercial
+   Transactions Act Disclosure") can't be shortened (legal pages take
+   punctuation edits only) and can't be shrunk to a literal single line at
+   390px without becoming unreadably small, so this sized-down variant
+   keeps the wrap to two short lines instead of four. */
+.page-header h1.title-compact { font-size: clamp(1.5rem, 6.4vw, 2.6rem); }
 
 /* ---------- Legal pages ---------- */
 .legal-body h2 { margin-top: 2em; font-size: 1.5rem; }
@@ -907,7 +1313,7 @@ section.alt .bundle-note { color: var(--ink-soft); }
 .step .num {
   font-family: var(--font-serif);
   font-size: 2.2rem;
-  color: var(--gold);
+  color: var(--accent);
   margin-bottom: 10px;
 }
 
@@ -931,3 +1337,57 @@ html:not([lang="ja"]) [data-lang-block="en"] { display: block; }
 .reveal { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms ease; }
 .js .reveal { opacity: 0; transform: translateY(16px); }
 .js .reveal.in { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ==========================================================================
+   Floating consultation sign
+   Injected into every page by js/main.js (initFloatingCta) — see that file
+   for the markup. Desktop: right-edge vertical tab. Mobile: bottom bar.
+   ========================================================================== */
+.float-cta {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  background: var(--relax-yellow);
+  color: var(--berry-chocolate);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 36px 20px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-radius: 14px 0 0 14px;
+  box-shadow: 0 14px 34px -14px rgba(0,0,0,0.4);
+  transition: padding var(--transition), background var(--transition);
+}
+.float-cta:hover,
+.float-cta:focus-visible {
+  background: color-mix(in srgb, var(--relax-yellow) 80%, var(--berry-chocolate) 20%);
+  padding-right: 26px;
+}
+.float-cta:focus-visible { outline: 2px solid var(--berry-chocolate); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .float-cta {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    writing-mode: horizontal-tb;
+    text-align: center;
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .float-cta:hover, .float-cta:focus-visible { padding-right: 20px; }
+}

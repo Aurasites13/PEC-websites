@@ -212,7 +212,7 @@ const PRODUCTS = [
       unitJa: "／月",
       contractEn: "Initial 3-month contract, renewed in 6-month terms thereafter.",
       contractJa: "初回3か月契約。その後6か月単位で更新。",
-      noteEn: "The 12-hour reply window is a target for an initial response only — it does not guarantee problem resolution, immediate action, or emergency handling.",
+      noteEn: "The 12-hour reply window is a target for an initial response only: it does not guarantee problem resolution, immediate action, or emergency handling.",
       noteJa: "12時間以内は「返信」の目安であり、問題解決・即時対応・緊急対応を保証するものではない。",
     },
     servicesIncluded: [
@@ -271,7 +271,7 @@ const PRODUCTS = [
             { en: "Selecting countries and education systems", ja: "国・教育制度の選定" },
             { en: "Researching and comparing candidate schools/universities", ja: "学校・大学候補の調査と比較" },
             { en: "Target-school strategy and gap analysis", ja: "志望校戦略・ギャップ分析" },
-            { en: "A 6–12 month admissions roadmap", ja: "6〜12か月の進学ロードマップ" },
+            { en: "A 6 to 12 month admissions roadmap", ja: "6〜12か月の進学ロードマップ" },
           ],
           deliverables: [
             { en: "Student & academic profile", ja: "生徒・学業プロフィール" },

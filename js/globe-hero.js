@@ -23,7 +23,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var CLOUD_R = GLOBE_R * 1.012;
   var JAPAN_LAT = 36;
   var JAPAN_LON = 138;
-  var NAVY = 0x070d1a; // kept in sync with --navy in css/style.css
+  var GLOBE_BG = 0xf4f4f1; // Tender White — kept in sync with --tender-white in css/style.css
 
   var fallbackActivated = false;
   var fallbackTimer = null;
@@ -31,6 +31,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var started = false;
   var paused = false;
   var rafId = null;
+  var sizeObserver = null;
+  var io = null;
   var lastT = 0;
   var progress = 0;
   var targetProgress = 0;
@@ -85,16 +87,17 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var maxAnisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
 
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(NAVY);
-  scene.fog = new THREE.Fog(NAVY, 5, 11);
+  scene.background = new THREE.Color(GLOBE_BG);
+  scene.fog = new THREE.Fog(GLOBE_BG, 5, 11);
 
   var camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
   camera.position.set(0, 0, 4.6);
 
-  // Brighter, warmer-neutral fill so shadowed ocean reads as deep blue
-  // rather than near-black, without flattening the day/night contrast.
-  var ambient = new THREE.AmbientLight(0x8a94aa, 0.85);
-  var sun = new THREE.DirectionalLight(0xfff2df, 2.3);
+  // Lifted from the old dark-hero values: on a light (Tender White) backdrop,
+  // shadowed ocean needs more fill or it reads as a harsh dark silhouette
+  // edge against the white page instead of a shaded sphere.
+  var ambient = new THREE.AmbientLight(0x8a94aa, 1.15);
+  var sun = new THREE.DirectionalLight(0xfff2df, 2.1);
   scene.add(ambient, sun);
 
   var globeGroup = new THREE.Group();
@@ -226,7 +229,6 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     var rect = wrapEl.getBoundingClientRect();
     var total = rect.height - window.innerHeight;
     targetProgress = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
-    if (targetProgress > 0.45) maybeLoadHiRes();
   }
 
   var scrollTicking = false;
@@ -251,7 +253,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   // camera framing computed too early can silently go stale until something
   // else happens to trigger a resize.
   if ("ResizeObserver" in window) {
-    var sizeObserver = new ResizeObserver(function () {
+    sizeObserver = new ResizeObserver(function () {
       resize();
       if (!ready) return;
       if (reducedMotion) {
@@ -313,13 +315,16 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     if (fallbackActivated) return;
     resize();
     ready = true;
+    // Hidden as early as possible: nothing past this point should be able
+    // to leave the loading overlay stuck in front of a working scene, even
+    // if something later in this function throws.
+    if (loadingEl) loadingEl.classList.add("is-hidden");
 
     if (reducedMotion) {
       wrapEl.classList.add("hero3d-static");
       progress = 0.32;
       updateCamera();
       renderer.render(scene, camera);
-      if (loadingEl) loadingEl.classList.add("is-hidden");
       return;
     }
 
@@ -330,14 +335,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
+      io = new IntersectionObserver(function (entries) {
         paused = !entries[0].isIntersecting;
         if (!paused && !rafId) { lastT = performance.now(); rafId = requestAnimationFrame(animate); }
       }, { threshold: 0 });
       io.observe(wrapEl);
     }
 
-    if (loadingEl) loadingEl.classList.add("is-hidden");
     lastT = performance.now();
     rafId = requestAnimationFrame(animate);
   }
@@ -360,7 +364,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   manager.onLoad = onReady;
   manager.onError = function () { activateFallback(); };
   var loader = new THREE.TextureLoader(manager);
-  var dayTex = loader.load("assets/textures/earth-day.jpg");
+  // Single high-resolution day map (native 5400x2700) loaded up front and
+  // used for the whole fly-through: swapping in a sharper texture mid-scroll
+  // (the previous behavior) left the globe visibly blurry from the first
+  // frame until the swap fired, and the swap itself caused a visible pop.
+  // The loading bar already gates first paint on this finishing, so there's
+  // no soft/blurry period to begin with.
+  var dayTex = loader.load("assets/textures/earth-day-hires.jpg");
   dayTex.colorSpace = THREE.SRGBColorSpace;
   dayTex.anisotropy = maxAnisotropy;
   var cloudTex = loader.load("assets/textures/earth-clouds.png");
@@ -368,22 +378,63 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   globeMat.map = dayTex;
   cloudMat.map = cloudTex;
 
-  // Higher-resolution day map (native 5400x2700, needed for the close-in
-  // Japan zoom to read as sharp rather than upscaled/soft), fetched only
-  // once scrolling actually approaches that zoomed-in state — not eagerly
-  // on load — so visitors who never scroll past the fold never pay for it.
-  var hiResRequested = false;
-  function maybeLoadHiRes() {
-    if (hiResRequested) return;
-    hiResRequested = true;
-    new THREE.TextureLoader().load("assets/textures/earth-day-hires.jpg", function (hiResTex) {
-      hiResTex.colorSpace = THREE.SRGBColorSpace;
-      hiResTex.anisotropy = maxAnisotropy;
-      globeMat.map = hiResTex;
-      globeMat.needsUpdate = true;
-      dayTex.dispose();
-    });
-  }
-
   fallbackTimer = setTimeout(activateFallback, 9000);
+
+  // ---------- #japan deep link ----------
+  // The hero has no real anchor target (it's one pinned element the whole
+  // way through), so a normal <a href="index.html#japan"> can't jump to
+  // "the Japan moment" on its own. Instead, on that hash we compute the
+  // scroll position that corresponds to a progress value deep into the
+  // reveal (text fully shown, wordmark long faded) and scroll there
+  // directly; the camera then eases to match via the normal animate()
+  // loop. In reduced-motion/fallback modes the text is already shown at
+  // rest with no scroll-driven camera, so this just scrolls the hero into
+  // view instead of computing a progress-based offset.
+  var JAPAN_STAGE_PROGRESS = 0.88;
+  function scrollToJapanStage() {
+    if (fallbackActivated || reducedMotion) {
+      wrapEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    var wrapTop = wrapEl.getBoundingClientRect().top + window.scrollY;
+    var total = wrapEl.offsetHeight - window.innerHeight;
+    if (total <= 0) { wrapEl.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    window.scrollTo({ top: wrapTop + JAPAN_STAGE_PROGRESS * total, behavior: "smooth" });
+  }
+  function maybeScrollToJapanStage() {
+    if (location.hash !== "#japan") return;
+    if (ready || fallbackActivated) { scrollToJapanStage(); return; }
+    setTimeout(maybeScrollToJapanStage, 150);
+  }
+  maybeScrollToJapanStage();
+  window.addEventListener("hashchange", function () {
+    if (location.hash === "#japan") scrollToJapanStage();
+  });
+
+  // ---------- Cleanup on navigation ----------
+  // The JS realm is discarded on a real full-page navigation, but the
+  // GPU-side WebGL context it holds isn't guaranteed to be reclaimed at
+  // the same moment — browsers cap the number of live WebGL contexts per
+  // process, and on fast repeat navigation (reload-testing, clicking
+  // between pages quickly) a context that hasn't been explicitly released
+  // yet can make the *next* page's renderer fail to initialize or stall.
+  // forceContextLoss() releases the GPU resources synchronously instead of
+  // waiting on garbage collection. pagehide (not beforeunload/unload, both
+  // unreliable and bfcache-hostile) fires on every way of leaving the page.
+  function disposeThreeResources() {
+    if (rafId) { try { cancelAnimationFrame(rafId); } catch (e) {} rafId = null; }
+    if (fallbackTimer) { try { clearTimeout(fallbackTimer); } catch (e) {} fallbackTimer = null; }
+    try { window.removeEventListener("scroll", onScroll); } catch (e) {}
+    try { window.removeEventListener("resize", onResize); } catch (e) {}
+    try { window.removeEventListener("mousemove", onMouseMove); } catch (e) {}
+    try { if (sizeObserver) sizeObserver.disconnect(); } catch (e) {}
+    try { if (io) io.disconnect(); } catch (e) {}
+    try { globeGeo.dispose(); globeMat.dispose(); } catch (e) {}
+    try { cloudGeo.dispose(); cloudMat.dispose(); } catch (e) {}
+    try { if (dayTex) dayTex.dispose(); } catch (e) {}
+    try { if (cloudTex) cloudTex.dispose(); } catch (e) {}
+    try { renderer.dispose(); } catch (e) {}
+    try { if (renderer.forceContextLoss) renderer.forceContextLoss(); } catch (e) {}
+  }
+  window.addEventListener("pagehide", disposeThreeResources);
 })();
