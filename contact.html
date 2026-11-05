@@ -60,6 +60,11 @@
               <label><span data-lang-inline="en">Don&rsquo;t fill this out if you&rsquo;re human:</span><span data-lang-inline="ja"></span> <input name="company"></label>
             </p>
 
+            <p class="form-required-note"><span data-lang-inline="en">Fields marked <strong class="required-mark">*</strong> are required.</span><span data-lang-inline="ja"><strong class="required-mark">*</strong>は必須項目です。</span></p>
+
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Your Details</span><span data-lang-inline="ja">お客様情報</span></h3>
+
             <div class="form-row-2">
               <div class="form-field">
                 <label for="lastName"><span data-lang-inline="en">Last Name</span><span data-lang-inline="ja">姓</span></label>
@@ -234,6 +239,10 @@
               <label for="phone"><span data-lang-inline="en">Phone Number</span><span data-lang-inline="ja">電話番号</span></label>
               <input type="tel" id="phone" name="phone" required>
             </div>
+            </div>
+
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Where You Live</span><span data-lang-inline="ja">お住まい</span></h3>
 
             <fieldset class="form-fieldset" data-other-group="residenceCountry">
               <legend><span data-lang-inline="en">Country of Residence</span><span data-lang-inline="ja">居住国</span></legend>
@@ -250,6 +259,10 @@
               <label for="region"><span data-lang-inline="en">Region</span><span data-lang-inline="ja">地域</span></label>
               <input type="text" id="region" name="region" required placeholder="e.g. Tokyo, California / 例：OO県、OO州など">
             </div>
+            </div>
+
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">About You</span><span data-lang-inline="ja">ご本人について</span></h3>
 
             <fieldset class="form-fieldset" data-other-group="status">
               <legend><span data-lang-inline="en">Status</span><span data-lang-inline="ja">属性</span></legend>
@@ -286,8 +299,12 @@
                 <input type="text" name="referralSourceOther" placeholder="Please specify / 具体的にご記入ください">
               </div>
             </fieldset>
+            </div>
 
-            <fieldset class="form-fieldset" id="coursesFieldset">
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Your Interests</span><span data-lang-inline="ja">ご希望のコース</span></h3>
+
+            <fieldset class="form-fieldset is-required" id="coursesFieldset">
               <legend><span data-lang-inline="en">Courses of Interest</span><span data-lang-inline="ja">希望コース</span></legend>
               <div class="checkbox-pills">
                 <span class="checkbox-pill"><input type="checkbox" id="course-tutoring" name="coursesInterest" value="Private Academic Tutoring / プライベート・アカデミック・チュータリング"><label for="course-tutoring"><span data-lang-inline="en">Private Academic Tutoring</span><span data-lang-inline="ja">プライベート・アカデミック・チュータリング</span></label></span>
@@ -300,10 +317,11 @@
               </div>
               <p class="form-error" id="coursesError"><span data-lang-inline="en">Please select at least one course.</span><span data-lang-inline="ja">少なくとも1つのコースをお選びください。</span></p>
             </fieldset>
-
-            <div class="form-field">
-              <p class="form-note" style="margin:0 0 10px;font-size:0.86rem;"><span data-lang-inline="en">Preferred dates: please offer a wide range, weekdays or weekends, any time over 24 hours. Sessions typically run 30 to 60 minutes.</span><span data-lang-inline="ja">希望日程：幅広にご提示をお願いいたします。平日・土日祝、24時間候補に入れていただいて構いません。所要時間は30から60分を予定しております。</span></p>
             </div>
+
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Preferred Dates</span><span data-lang-inline="ja">ご希望の日程</span></h3>
+            <p class="form-section-note"><span data-lang-inline="en">Please offer a wide range, weekdays or weekends, any time over 24 hours. Sessions typically run 30 to 60 minutes.</span><span data-lang-inline="ja">幅広にご提示をお願いいたします。平日・土日祝、24時間候補に入れていただいて構いません。所要時間は30から60分を予定しております。</span></p>
             <div class="form-field">
               <label for="preferredDate1"><span data-lang-inline="en">Preferred Date 1 (Japan Time)</span><span data-lang-inline="ja">希望日程&#9312;（日本時間）</span></label>
               <input type="text" id="preferredDate1" name="preferredDate1" required placeholder="e.g. Nov 20, 18:00 to 21:00 / 例：11月20日 18:00-21:00のどこか">
@@ -316,14 +334,18 @@
               <label for="preferredDate3"><span data-lang-inline="en">Preferred Date 3 (Japan Time)</span><span data-lang-inline="ja">希望日程&#9314;（日本時間）</span></label>
               <input type="text" id="preferredDate3" name="preferredDate3" required placeholder="e.g. Nov 22, 15:00 to 17:00 / 例：11月22日 15:00-17:00のどこか">
             </div>
+            </div>
 
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Your Questions</span><span data-lang-inline="ja">ご相談内容</span></h3>
             <div class="form-field">
               <label for="discussionTopics"><span data-lang-inline="en">What Would You Like to Discuss?</span><span data-lang-inline="ja">当日相談したい内容</span></label>
               <textarea id="discussionTopics" name="discussionTopics" required></textarea>
             </div>
+            </div>
 
-            <div class="form-section-divider">
-              <h3><span data-lang-inline="en">If You Were Referred (Optional)</span><span data-lang-inline="ja">ご紹介を受けた方へ（任意）</span></h3>
+            <div class="form-section">
+            <h3 class="form-section-title"><span data-lang-inline="en">Referral</span><span data-lang-inline="ja">ご紹介</span><span class="form-section-optional-tag"><span data-lang-inline="en">(Optional)</span><span data-lang-inline="ja">（任意）</span></span></h3>
               <p class="form-section-note"><span data-lang-inline="en">Please enter only one referrer.</span><span data-lang-inline="ja">紹介者は1名のみご記入いただけます。</span></p>
 
               <div class="form-field">
@@ -346,6 +368,7 @@
               </div>
             </div>
 
+            <div class="form-section">
             <label class="form-consent">
               <input type="checkbox" id="privacyConsent" name="privacyConsent" value="agreed" required>
               <span><span data-lang-inline="en">I have read and agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span><span data-lang-inline="ja"><a href="privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意します。</span></span>
@@ -353,6 +376,7 @@
 
             <button type="submit" class="btn btn-accent btn-block"><span data-lang-inline="en">Submit Application</span><span data-lang-inline="ja">送信する</span></button>
             <div class="form-status" style="display:none;" role="status"></div>
+            </div>
           </form>
         </div>
 

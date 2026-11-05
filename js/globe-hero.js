@@ -25,6 +25,23 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   var JAPAN_LON = 138;
   var GLOBE_BG = 0xf4f4f1; // Tender White — kept in sync with --tender-white in css/style.css
 
+  // Where Japan lands on screen once the camera arrives (see
+  // applyScreenOffset): desktop/tablet pushes it into the right half of the
+  // viewport so the title/text can sit directly on the page background on
+  // the left, with no card behind it; mobile instead pushes it up so the
+  // text can sit below it. MOBILE_BP matches the .hero3d-text breakpoint in
+  // css/style.css.
+  var JAPAN_SCREEN_X = 0.68;
+  var JAPAN_SCREEN_Y_MOBILE = 0.22;
+  var MOBILE_BP = 640;
+  // Shifting fracY only crops *which* part of the (always same-size) sphere
+  // is visible — it doesn't shrink it. On mobile the sphere's own apparent
+  // diameter is otherwise large enough that pushing it up still leaves its
+  // bottom edge overlapping the text below, so it's additionally pulled
+  // back as the camera arrives (eased -> 1), mobile only, rest-state
+  // framing untouched.
+  var MOBILE_ARRIVAL_PULLBACK = 1.55;
+
   var fallbackActivated = false;
   var fallbackTimer = null;
   var ready = false;
@@ -161,14 +178,45 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     return { distStart: distStart, distEnd: distEnd, fov: fov };
   }
 
+  var viewW = 0, viewH = 0;
   function resize() {
     var w = stickyEl.clientWidth, h = stickyEl.clientHeight;
     if (!w || !h) return;
+    viewW = w; viewH = h;
     renderer.setSize(w, h, false);
     var aspect = w / h;
     framing = computeFraming(aspect);
     camera.aspect = aspect;
     camera.fov = framing.fov;
+    camera.updateProjectionMatrix();
+  }
+
+  // One axis (full virtual size + offset within it) of an off-center
+  // setViewOffset crop that lands the lookAt point at `frac` (0..1) along
+  // that axis of the displayed viewport. For frac >= 0.5 the crop is
+  // flush with the start of an enlarged virtual frame (offset 0); for
+  // frac < 0.5 it has to be flush with the END instead, or the "virtual
+  // frame" would need to be smaller than the real viewport, which
+  // setViewOffset can't express.
+  function offsetAxis(frac, dim) {
+    if (frac >= 0.5) return { full: 2 * frac * dim, offset: 0 };
+    return { full: 2 * (1 - frac) * dim, offset: dim * (1 - 2 * frac) };
+  }
+
+  // Shifts the rendered frame off-center (an asymmetric view frustum, the
+  // same mechanism tiled/cinematic renderers use) instead of rotating the
+  // camera or the lookAt target — rotating would throw off the lighting and
+  // the great-circle fly-through itself. fracX/fracY are where the lookAt
+  // point (Japan, once eased===1) should land as a fraction of the
+  // viewport; 0.5/0.5 is dead center, i.e. today's unshifted framing.
+  function applyScreenOffset(eased) {
+    if (!viewW || !viewH) return;
+    var isMobile = viewW <= MOBILE_BP;
+    var fracX = isMobile ? 0.5 : THREE.MathUtils.lerp(0.5, JAPAN_SCREEN_X, eased);
+    var fracY = isMobile ? THREE.MathUtils.lerp(0.5, JAPAN_SCREEN_Y_MOBILE, eased) : 0.5;
+    var ax = offsetAxis(fracX, viewW);
+    var ay = offsetAxis(fracY, viewH);
+    camera.setViewOffset(ax.full, ay.full, ax.offset, ay.offset, viewW, viewH);
     camera.updateProjectionMatrix();
   }
 
@@ -188,6 +236,9 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     var dir = slerpDir(startDir, japanWorld, eased);
     updateSunDirection(dir);
     var dist = THREE.MathUtils.lerp(framing.distStart, framing.distEnd, eased);
+    if (viewW && viewW <= MOBILE_BP) {
+      dist *= THREE.MathUtils.lerp(1, MOBILE_ARRIVAL_PULLBACK, eased);
+    }
     var target = new THREE.Vector3().lerpVectors(
       new THREE.Vector3(0, 0, 0),
       japanWorld.clone().multiplyScalar(GLOBE_R),
@@ -195,6 +246,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
     );
     camera.position.copy(dir.clone().multiplyScalar(dist)).add(parallaxOffset);
     camera.lookAt(target);
+    applyScreenOffset(eased);
   }
 
   var sunUpRef = new THREE.Vector3(0, 1, 0);
