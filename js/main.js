@@ -118,6 +118,7 @@
         ]
       },
       { en: "About Our Lessons", ja: "授業について", href: "lessons.html" },
+      { en: "Student Testimonials", ja: "生徒の声", href: "testimonials.html" },
       { en: "Results", ja: "合格実績", href: "results.html" },
       { en: "Pricing", ja: "料金", href: "pricing.html" },
       { en: "FAQ", ja: "よくある質問", href: "faq.html" },
